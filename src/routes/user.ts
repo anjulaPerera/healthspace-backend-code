@@ -25,13 +25,5 @@ export function initUserRoutes(app: Express) {
     UserEp.resetPassword
   );
 
-  app.post(
-    "/api/auth/plan-upgrade/paylink",
-    UserEp.sendPayLink
-  );
 
-  app.get("/api/auth/get/free-users", UserEp.getFreeUsers);
-  app.get("/api/auth/get/silver-users", UserEp.getSilverUsers);
-  app.get("/api/auth/get/gold-users", UserEp.getGoldUsers);
-  
 }

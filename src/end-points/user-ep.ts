@@ -94,44 +94,7 @@ export namespace UserEp {
       return res.sendError("Something Went Wrong!!");
     }
   }
-  export async function getFreeUsers(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const response = await UserDao.getUsersByFreePackage();
-      console.log("typeof response", typeof response);
-      console.log("response", response);
-      res.sendSuccess(response, "Free Users Found!");
-    } catch (err) {
-      return res.sendError("Something Went Wrong!!");
-    }
-  }
-  export async function getSilverUsers(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const response = await UserDao.getUsersBySilverPackage();
-      res.sendSuccess(response, "Free Users Found!");
-    } catch (err) {
-      return res.sendError("Something Went Wrong!!");
-    }
-  }
-  export async function getGoldUsers(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const response = await UserDao.getUsersByGoldPackage();
-      res.sendSuccess(response, "Free Users Found!");
-    } catch (err) {
-      return res.sendError("Something Went Wrong!!");
-    }
-  }
+
 
   export function resetPasswordValidationRules(): ValidationChain[] {
     return [
@@ -240,61 +203,6 @@ export namespace UserEp {
 
       console.log("saveUser", saveUser);
       return res.sendSuccess(saveUser, "User Registered!");
-    } catch (err) {
-      return res.sendError(err);
-    }
-  }
-  export async function sendPayLink(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    console.log("in sendPayLink func")
-    try {
-      console.log("in sendPayLink func try")
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.sendError(errors.array()[0]["msg"]);
-      }
-
-      const link = req.body.link;
-      const id = req.query.id as string;
-      const userId = new ObjectId(id);
-
-
-        const userData: DUser = {
-        paymentLink: link,
-  
-      };
-      
-
-      console.log("check following logs")
-      console.log("link", link);
-      console.log("id", id);
-      console.log("userId", userId);
-
-      const updateUserPayLink = await AdminDao.updatePayLink(userId, userData.paymentLink);
-      if (!updateUserPayLink) {
-        return res.sendError("Link sending failed");
-      }
-
-      const user = await UserDao.getUserById(userId.toString());
-
-      Util.sendPayLinkEmail(user.email, link).then(
-        function (response) {
-          if (response === 1) {
-            console.log("Email Sent Successfully!");
-          } else {
-            console.log("Failed to Send The Email!");
-          }
-        },
-        function (error) {
-          console.log("Email Function Failed!");
-        }
-      );
-
-      console.log("updateUserPayLink", updateUserPayLink);
-      return res.sendSuccess(updateUserPayLink, "User Registered!");
     } catch (err) {
       return res.sendError(err);
     }
