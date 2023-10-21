@@ -26,14 +26,6 @@ export function initUserRoutes(app: Express) {
   );
 
   app.post(
-    "/api/auth/plan-upgrade/silver/request",
-    UserEp.sendChangePlanRequestSilver
-  );
-  app.post(
-    "/api/auth/plan-upgrade/gold/request",
-    UserEp.sendChangePlanRequestGold
-  );
-  app.post(
     "/api/auth/plan-upgrade/paylink",
     UserEp.sendPayLink
   );

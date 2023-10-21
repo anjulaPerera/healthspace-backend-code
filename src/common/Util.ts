@@ -1,7 +1,5 @@
 import * as bcrypt from "bcryptjs";
 import { ValidationChain, param } from "express-validator";
-import Demo from "../schemas/demo-schema";
-import { DemoDao } from "../dao/demo-dao";
 const nodemailer = require("nodemailer");
 import crypto from 'crypto';
 require("dotenv").config();
@@ -60,59 +58,9 @@ export namespace Util {
     }
   }
   
-//   export async function sendOtpToUserEmail(email: string, otp: string): Promise<number> {
-//       try {
-      
-//   const transporter = nodemailer.createTransport({
-//     host: process.env.MAIL_HOST,
-//         port: process.env.MAIL_PORT,
-//         secure: false, // true for 465, false for other ports
-//         auth: {
-//           user: process.env.MAIL_USERNAME, // generated ethereal user
-//           pass: process.env.MAIL_PASSWORD, // generated ethereal password
-//         },
-//   });
-//       // send mail with defined transport object
-//       let info = await transporter.sendMail({
-//         from: process.env.MAIL_FROM_ADDRESS, // sender address
-//         to: email, // list of receivers
-//         subject: 'OTP for Registration', // Subject line
-//         text: `Your OTP for registration is: ${otp}`, // plain text body
-//         // html: html, // html body
-//       });
-
-//       return 1;
-//     } catch (err) {
-//       console.log(err);
-//       return 0;
-//     }
-      
 
 
 
-// }
-
-  //demo email status update
-  export async function demoEmailStatusUpdateFunction(email: string) {
-    try {
-      const checkDemoEmailExists = await DemoDao.doesEmailExists(email);
-      if (checkDemoEmailExists) {
-        const updateDemo = await DemoDao.updateDemoStatus(email);
-        if (!updateDemo) {
-          console.log("Demo Status Update Failed");
-          return 0;
-        } else {
-          return 1;
-        }
-      } else {
-        console.log("No Email Found in Demo");
-        return 0;
-      }
-    } catch (err) {
-      console.log(err);
-      return 0;
-    }
-  }
 
 
     export async function sendVerificationEmail(email: string, verificationToken: string): Promise<number> {

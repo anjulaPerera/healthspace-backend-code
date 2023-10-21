@@ -1,9 +1,0 @@
-const PaymentState = {
-    PAY_LINK_REQUESTED_SILVER : "PAY_LINK_REQUESTED_SILVER",
-    PAY_LINK_REQUESTED_GOLD : "PAY_LINK_REQUESTED_GOLD",
-    PAY_LINK_SENT : "PAY_LINK_SENT",
-    PAID : "PAID",
-}
-
-
-export default PaymentState;

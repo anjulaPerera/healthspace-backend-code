@@ -3,7 +3,6 @@ import { Schema } from "mongoose";
 import * as bcrypt from "bcryptjs";
 import { IUser } from "../models/user-model";
 import UserStatus from "../enums/UserStatus";
-import PaymentState from "../enums/PaymentState";
 const jwt = require("jsonwebtoken");
 
 export const UserSchemaOptions: mongoose.SchemaOptions = {
@@ -59,11 +58,7 @@ export const userSchema = new mongoose.Schema<IUser>(
       type: Schema.Types.String,
       required: false,
     },
-    paymentState: {
-      type: String,
-      enum: Object.values(PaymentState),
-      required: false,
-    },
+
     paymentLink: {
       type: Schema.Types.String,
       required: false,

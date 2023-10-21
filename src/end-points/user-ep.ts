@@ -1,6 +1,4 @@
-import Team from "../schemas/team-schema";
-import Player from "../schemas/player-schema";
-import Tournament from "../schemas/tournament-schema";
+
 import { NextFunction, Request, Response } from "express";
 import {
   check,
@@ -16,7 +14,6 @@ import { UserDao } from "../dao/user-dao";
 import { Validations } from "../common/validation";
 import { Util } from "../common/Util";
 import UserStatus from "../enums/UserStatus";
-import PaymentState from "../enums/PaymentState";
 const { ObjectId } = require("mongodb");
 
 export namespace UserEp {
@@ -343,57 +340,6 @@ export namespace UserEp {
     }
   }
 
-  export async function sendChangePlanRequestSilver(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const id = req.query.id as string;
-
-
-      const user = await UserDao.getUserById(id);
-
-      if (!user) {
-        return res.sendError("User Not Found");
-      }
-
-      const updateUser: any = await UserDao.payLinkRequestSilver(user._id);
-
-      if (!updateUser) {
-        return res.sendError("Something Went Wrong!!");
-      }
-
-      res.sendSuccess(updateUser, "Package Update Request sent Successfully!!");
-    } catch (err) {
-      return res.sendError("Something Went Wrong!!");
-    }
-  }
-  export async function sendChangePlanRequestGold(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-
-    try {
-      const id = req.query.id as string;
-
-
-      const user = await UserDao.getUserById(id);
-
-      if (!user) {
-        return res.sendError("User Not Found");
-      }
-
-      const updateUser: any = await UserDao.payLinkRequestGold(user._id);
-
-      if (!updateUser) {
-        return res.sendError("Something Went Wrong!!");
-      }
-
-      res.sendSuccess(updateUser, "Package Update Request sent Successfully!!");
-    } catch (err) {
-      return res.sendError("Something Went Wrong!!");
-    }
-  }
+ 
+ 
 }

@@ -3,7 +3,6 @@ import { ApplicationError } from "../common/application-error";
 import { DUser, IUser } from "../models/user-model";
 import User from "../schemas/user-schema";
 import UserType from "../enums/UserType";
-import PaymentState from "../enums/PaymentState";
 
 export namespace AdminDao {
   export async function registerAnUser(data: DUser): Promise<IUser> {

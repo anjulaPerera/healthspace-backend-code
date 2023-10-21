@@ -2,7 +2,6 @@ import { Types } from "mongoose";
 import { ApplicationError } from "../common/application-error";
 import { DUser, IUser } from "../models/user-model";
 import User from "../schemas/user-schema";
-import PaymentState from "../enums/PaymentState";
 
 export namespace UserDao {
   export async function doesUserExist(email: string) {
@@ -62,52 +61,7 @@ export namespace UserDao {
     return await User.find({ packageBought: "GOLD" }).exec();
   }
 
-  // export async function updateUserPackage(
-  //   userId: Types.ObjectId,
-  //   packageBought: string
-  // ): Promise<IUser> {
-  //   let updateUser: IUser = await User.findOneAndUpdate(
-  //     { _id: userId },
-  //     {
-  //       $set: {
-  //         packageBought: packageBought,
-  //       },
-  //     },
-  //     { new: true }
-  //   );
 
-  //   return updateUser;
-  // }
 
-    export async function payLinkRequestSilver(
-    userId: Types.ObjectId,
-  ): Promise<IUser> {
-    let updateUser: IUser = await User.findOneAndUpdate(
-      { _id: userId },
-      {
-        $set: {
-          paymentState: PaymentState.PAY_LINK_REQUESTED_SILVER,
-        },
-      },
-      { new: true }
-    );
-
-    return updateUser;
-  }
-    export async function payLinkRequestGold(
-    userId: Types.ObjectId,
-  ): Promise<IUser> {
-    let updateUser: IUser = await User.findOneAndUpdate(
-      { _id: userId },
-      {
-        $set: {
-          paymentState: PaymentState.PAY_LINK_REQUESTED_GOLD,
-        },
-      },
-      { new: true }
-    );
-
-    return updateUser;
-  }
 
 }

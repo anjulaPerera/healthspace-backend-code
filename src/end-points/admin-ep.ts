@@ -1,6 +1,4 @@
-import Team from "../schemas/team-schema";
-import Player from "../schemas/player-schema";
-import Tournament from "../schemas/tournament-schema";
+
 import { NextFunction, Request, Response } from "express";
 import {
   check,
@@ -10,8 +8,7 @@ import {
 } from "express-validator";
 import { DUser } from "../models/user-model";
 import { AdminDao } from "../dao/admin-dao";
-import LoginMethod from "../enums/LoginMethod";
-import User from "../schemas/user-schema";
+
 import { UserDao } from "../dao/user-dao";
 import { Validations } from "../common/validation";
 import UserType from "../enums/UserType";
@@ -97,12 +94,7 @@ export namespace AdminEp {
         return res.sendError("Registration failed");
       }
 
-      const updateDemoData = await Util.demoEmailStatusUpdateFunction(email);
-      if (updateDemoData === 1) {
-        res.sendSuccess(saveUser, "Successfully Registered! Demo Updated!");
-      } else {
-        res.sendSuccess(saveUser, "Successfully Registered! Demo Not Updated");
-      }
+    
     } catch (err) {
       return res.sendError(err);
     }
