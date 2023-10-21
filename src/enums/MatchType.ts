@@ -1,0 +1,10 @@
+const MatchType = {
+  REGULAR: "REGULAR",
+  QUALIFIER_ONE: "QUALIFIER_ONE",
+  ELIMINATER: "ELIMINATER",
+  QUALIFIER_TWO: "QUALIFIER_TWO",
+  FINAL: "FINAL",
+  SEMI_FINAL: "SEMI_FINAL",
+};
+
+export default MatchType;
