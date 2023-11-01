@@ -16,7 +16,6 @@ import UserStatus from "../enums/UserStatus";
 import { Util } from "../common/Util";
 
 export namespace AdminEp {
-  //admin user creates system users
   export function createAnUserByAdminValidationRules(): ValidationChain[] {
     return [
       check("name")
