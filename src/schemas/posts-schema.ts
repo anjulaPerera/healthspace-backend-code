@@ -1,10 +1,9 @@
 var mongoose = require("mongoose");
-import { Schema, Types } from "mongoose";
 
 const postsSchema = new mongoose.Schema({
-    user: {
+  user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User',
+    ref: "User",
     required: true,
   },
   content: {
@@ -16,28 +15,32 @@ const postsSchema = new mongoose.Schema({
     type: Buffer,
     required: false,
   },
-   likesFrom: [{
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
+  likesFrom: [
+    {
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
     },
-  }],
- commentsFrom: [{
-    user: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'User',
-      required: true,
+  ],
+  commentsFrom: [
+    {
+      user: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "User",
+        required: true,
+      },
+      text: {
+        type: String,
+        required: true,
+      },
+      createdAt: {
+        type: Date,
+        default: Date.now,
+      },
     },
-    text: {
-      type: String,
-      required: true,
-    },
-    createdAt: {
-      type: Date,
-      default: Date.now,
-    },
-  }],
+  ],
 
   createdAt: {
     type: Date,
