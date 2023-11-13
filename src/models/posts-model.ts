@@ -1,20 +1,13 @@
-import { Document, Schema, Types } from "mongoose";
+import * as mongoose from "mongoose";
 
-interface PostComment {
-  user: Types.ObjectId;
-  text: string;
-  createdAt: Date;
-}
 
-interface PostLike {
-  user: Types.ObjectId;
-}
-
-export interface Post {
-  user: Types.ObjectId;
+interface Common {
   content: string;
   images?: Buffer;
-  likesFrom: PostLike[];
-  commentsFrom: PostComment[];
-  createdAt: Date;
+  likesFrom: [];
+  commentsFrom: [];
 }
+
+export interface DPosts extends Common {}
+export interface IPosts extends Common, mongoose.Document {}
+
