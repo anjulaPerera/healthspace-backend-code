@@ -10,7 +10,6 @@ export default async function seedSuperAdmin() {
     userType: UserType.SUPER_ADMIN,
     password: "abc123",
     userStatus: UserStatus.ACTIVE,
-    country: "Sri Lanka",
   };
 
   const superAdmin = await createSuperAdmin(data01);

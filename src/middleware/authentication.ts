@@ -49,8 +49,27 @@ export class Authentication {
     const userData: any = req.user;
     if (
       userData.userType === UserType.LEVEL01 ||
-      userData.userType === UserType.SUPER_ADMIN ||
-      userData.userType === UserType.LEVEL02
+      userData.userType === UserType.SUPER_ADMIN
+
+    ) {
+      next();
+    } else {
+      return res.status(403).json({
+        success: false,
+        message: "No authorization to access this route!",
+      });
+    }
+  }
+  //level02 user validation
+  public static level02UserVerification(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const userData: any = req.user;
+    if (
+      userData.userType === UserType.LEVEL02 ||
+      userData.userType === UserType.SUPER_ADMIN
     ) {
       next();
     } else {

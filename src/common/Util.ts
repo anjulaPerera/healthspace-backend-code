@@ -63,27 +63,52 @@ export namespace Util {
 
 
 
-    export async function sendVerificationEmail(email: string, verificationToken: string): Promise<number> {
+  export async function sendVerificationEmail(
+    email: string,
+    verificationToken: string
+  ): Promise<number> {
     try {
-        
-          const verificationLink = `${process.env.VERIFICATION_URL}?email=${email}&token=${verificationToken}`;
+      const verificationLink = `${process.env.VERIFICATION_URL}?email=${email}&token=${verificationToken}`;
 
-      
-  const transporter = nodemailer.createTransport({
-    host: process.env.MAIL_HOST,
+      const transporter = nodemailer.createTransport({
+        host: process.env.MAIL_HOST,
         port: process.env.MAIL_PORT,
         secure: false,
         auth: {
-          user: process.env.MAIL_USERNAME, 
-          pass: process.env.MAIL_PASSWORD, 
+          user: process.env.MAIL_USERNAME,
+          pass: process.env.MAIL_PASSWORD,
         },
-  });
+      });
+
+const htmlBody = `
+  <table width="500" height="400" cellpadding="0" cellspacing="0" style="box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3); background-color:transparent; border-radius:8px;">
+    <tr>
+      <td colspan="2" style="background-color:#08273e; border-radius:8px 8px 0 0; text-align:center; color:white; height:70px;">
+        <h2>Email Verification</h2>
+      </td>
+    </tr>
+    <tr>
+      <td colspan="2" style="text-align:center;">
+        <h4>Please click the button below to verify your email!</h4>
+         <a href="${verificationLink}" style="display: inline-block; padding: 10px 20px; background-color: #4CAF50; color: white; text-decoration: none; border-radius: 5px;">Verify Email</a>
+         <p style="font-size: 10px;">*This will take you to the login page</p>
+      </td>
+    </tr>
+  
+    <tr>
+      <td colspan="2" style="background-color: #08273e; border-radius:0 0 8px 8px; text-align:start; color:white; height:70px;">
+        <p style="margin-left:20px;">&copy; ${new Date().getFullYear()} HealthSpace |  All rights reserved</p>
+      </td>
+    </tr>
+  </table>
+`;
+
+
       let info = await transporter.sendMail({
-        from: process.env.MAIL_FROM_ADDRESS, 
-        to: email, 
-        subject: 'CricView360 account verification',
-        text: `Click on this link to verify your account: ${verificationLink}`, 
-        // html: html, // html body
+        from: process.env.MAIL_FROM_ADDRESS,
+        to: email,
+        subject: "HealthSpace account verification",
+        html: htmlBody, 
       });
 
       return 1;
@@ -91,11 +116,7 @@ export namespace Util {
       console.log(err);
       return 0;
     }
-      
-
-
-
-}
+  }
    
  export function generateVerificationToken() {
   return crypto.randomBytes(32).toString('hex');

@@ -165,10 +165,13 @@ export namespace UserEp {
 
       const name = req.body.name;
       const email = req.body.email;
-      const userType = "LEVEL01";
+      const dob = req.body.dob;
+      const city = req.body.city;
+      const phone = req.body.phone;  
+      const userType = req.body.userType;
       const password = req.body.password;
-      const packageBought = "FREE";
       const isVerified = false;
+      
 
       const verificationToken = Util.generateVerificationToken();
 
@@ -178,9 +181,12 @@ export namespace UserEp {
         userType: userType,
         password: password,
         userStatus: UserStatus.PENDING_VERIFICATION,
-        packageBought: packageBought,
         isVerified: isVerified,
         verificationToken: verificationToken,
+        dob: dob,
+        city: city,
+        phone: phone,
+        
       };
 
       const saveUser = await AdminDao.registerAnUser(userData);

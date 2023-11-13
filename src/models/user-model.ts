@@ -7,11 +7,12 @@ interface Common {
   userType?: string;
   password?: string;
   userStatus?: string;
-  packageBought?: string;
   isVerified?: boolean;
   verificationToken?: string;
-  paymentState?: string;
-  paymentLink?: string;
+  dob?: Date;
+  city?: string;
+  phone?: number;
+
 }
 
 export interface DUser extends Common {
