@@ -12,6 +12,7 @@ interface Common {
   dob?: Date;
   city?: string;
   phone?: number;
+  occupation?: string;
 
 }
 

@@ -171,6 +171,7 @@ export namespace UserEp {
       const userType = req.body.userType;
       const password = req.body.password;
       const isVerified = false;
+      const occupation = req.body.occupation;
       
 
       const verificationToken = Util.generateVerificationToken();
@@ -186,7 +187,8 @@ export namespace UserEp {
         dob: dob,
         city: city,
         phone: phone,
-        
+        occupation: occupation,
+
       };
 
       const saveUser = await AdminDao.registerAnUser(userData);
