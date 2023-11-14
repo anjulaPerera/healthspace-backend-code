@@ -1,67 +1,200 @@
-import { Types } from "mongoose";
-import { ApplicationError } from "../common/application-error";
-import { DUser, IUser } from "../models/user-model";
-import User from "../schemas/user-schema";
+import { DPosts, IComment, ILike, IPosts } from "../models/posts-model";
+import Posts from "../schemas/posts-schema";
+import { ObjectId } from "mongodb";
 
-export namespace UserDao {
-  export async function doesUserExist(email: string) {
-    const userFound = await User.findOne({ email: email });
-    return userFound;
-  }
-
-  export async function loginWithEmail(
-    email: string,
-    password: string,
-    medium: string,
-    remember: boolean,
-    user: any
-  ): Promise<any> {
-    const isMatch = await user.comparePassword(password);
-    if (isMatch) {
-      var tokenString = await user.createAccessToken(
-        remember ? "365 days" : "24 hours"
-      );
-
-      return {
-        token: tokenString,
-      };
-    } else {
-      throw new ApplicationError("Incorrect email/password combination!");
+export namespace PostsDao {
+  export async function savePost(postData: DPosts): Promise<IPosts | null> {
+    try {
+      const savedPost = await Posts.create(postData);
+      return savedPost;
+    } catch (error) {
+      throw error;
     }
   }
 
-  export async function updateToANewPassword(
-    userId: Types.ObjectId,
-    password: string
-  ): Promise<IUser> {
-    let updatePassword: IUser = await User.findOneAndUpdate(
-      { _id: userId },
-      {
-        password: password,
-      },
-      { new: true }
-    );
-
-    return updatePassword;
+  export async function getUserPosts(userId: string): Promise<IPosts[]> {
+    try {
+      const userPosts = await Posts.find({ userId }).exec();
+      return userPosts;
+    } catch (error) {
+      throw error;
+    }
   }
 
-   export async function getUserByEmail(email: string): Promise<IUser | null> {
-    return await User.findOne({ email: email });
-  }
-   export async function getUserById(id: any): Promise<IUser | null> {
-    return await User.findOne({ _id  : id });
-  }
-  export async function getUsersByFreePackage(): Promise<IUser[]> {
-    return await User.find({ packageBought: "FREE" }).exec();
-  }
-  export async function getUsersBySilverPackage(): Promise<IUser[]> {
-    return await User.find({ packageBought: "SILVER" }).exec();
-  }
-  export async function getUsersByGoldPackage(): Promise<IUser[]> {
-    return await User.find({ packageBought: "GOLD" }).exec();
+  export async function saveLike(
+    postId: string,
+    userId: string
+  ): Promise<IPosts | null> {
+    try {
+      const post = await this.getPostById(postId);
+
+      if (!post) {
+        throw new Error("Post not found");
+      }
+
+      // Check if the user has already liked the post
+      const alreadyLiked = post.likesFrom.some(
+        (like) => like.userId.toString() === userId
+      );
+
+      if (alreadyLiked) {
+        throw new Error("User has already liked this post");
+      }
+
+      // Add the new like
+      post.likesFrom.push({ userId: new ObjectId(userId) });
+
+      // Save the updated post
+      const updatedPost = await post.save();
+      return updatedPost;
+    } catch (error) {
+      console.error("Error saving like:", error);
+      return null;
+    }
   }
 
+  export async function saveComment(
+    postId: string,
+    commentData: { userId: string; text: string }
+  ): Promise<IPosts | null> {
+    try {
+      const post = await this.getPostById(postId);
 
+      if (!post) {
+        throw new Error("Post not found");
+      }
 
+      // Add the new comment
+      post.commentsFrom.push({
+        userId: new ObjectId(commentData.userId),
+        text: commentData.text,
+      });
 
+      // Save the updated post
+      const updatedPost = await post.save();
+      return updatedPost;
+    } catch (error) {
+      console.error("Error saving comment:", error);
+      return null;
+    }
+  }
+
+  export async function getPostById(postId: string): Promise<IPosts | null> {
+    try {
+      const post = await Posts.findOne({ _id: new ObjectId(postId) });
+      return post;
+    } catch (error) {
+      console.error("Error getting post by ID:", error);
+      return null;
+    }
+  }
+
+  export async function getCommentById(
+    postId: string,
+    commentId: string
+  ): Promise<IComment | null> {
+    try {
+      const post = await Posts.findOne({
+        _id: new ObjectId(postId),
+        "commentsFrom._id": new ObjectId(commentId),
+      });
+
+      if (post) {
+        const comment = post.commentsFrom.find(
+          (c) => c._id.toString() === commentId
+        );
+        return comment || null;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error("Error getting comment by ID:", error);
+      return null;
+    }
+  }
+
+  export async function getLikeById(
+    postId: string,
+    likeId: string
+  ): Promise<ILike | null> {
+    try {
+      const post = await Posts.findOne({
+        _id: new ObjectId(postId),
+        "likesFrom._id": new ObjectId(likeId),
+      });
+
+      if (post) {
+        const like = post.likesFrom.find((l:any) => l._id.toString() === likeId);
+        return like || null;
+      } else {
+        return null;
+      }
+    } catch (error) {
+      console.error("Error getting like by ID:", error);
+      return null;
+    }
+  }
+  export async function deleteComment(
+    postId: string,
+    commentId: string
+  ): Promise<IPosts | null> {
+    try {
+      const post = await getPostById(postId);
+
+      if (!post) {
+        throw new Error("Post not found");
+      }
+
+      // Find the index of the comment in the array
+      const commentIndex = post.commentsFrom.findIndex(
+        (c) => c._id.toString() === commentId
+      );
+
+      if (commentIndex === -1) {
+        throw new Error("Comment not found");
+      }
+
+      // Remove the comment from the array
+      post.commentsFrom.splice(commentIndex, 1);
+
+      // Save the updated post
+      const updatedPost = await post.save();
+      return updatedPost;
+    } catch (error) {
+      console.error("Error deleting comment:", error);
+      return null;
+    }
+  }
+
+  export async function removeLike(
+    postId: string,
+    likeId: string
+  ): Promise<IPosts | null> {
+    try {
+      const post = await getPostById(postId);
+
+      if (!post) {
+        throw new Error("Post not found");
+      }
+
+      // Find the index of the like in the array
+      const likeIndex = post.likesFrom.findIndex(
+        (l) => l._id.toString() === likeId
+      );
+
+      if (likeIndex === -1) {
+        throw new Error("Like not found");
+      }
+
+      // Remove the like from the array
+      post.likesFrom.splice(likeIndex, 1);
+
+      // Save the updated post
+      const updatedPost = await post.save();
+      return updatedPost;
+    } catch (error) {
+      console.error("Error removing like:", error);
+      return null;
+    }
+  }
 }

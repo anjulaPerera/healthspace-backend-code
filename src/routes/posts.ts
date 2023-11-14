@@ -1,29 +1,35 @@
+import { PostsMiddleware } from './../middleware/posts';
 import { Express } from "express";
-import { UserEp } from "../end-points/user-ep";
+import { PostsEp } from "../end-points/posts-ep";
 
-export function initUserRoutes(app: Express) {
-  /* PUBLIC ROUTES */
-  app.post(
-    "/api/public/login",
-    UserEp.authenticateWithEmailValidationRules(),
-    UserEp.authenticateWithEmail
-  );
-  app.post(
-    "/api/public/signup",
-    UserEp.signUpWithEmailValidationRules(),
-    UserEp.signUpUser
-  );
-  app.get("/api/public/verify-email", UserEp.verifyEmail);
-
-
-  /* AUTH ROUTES */
-  app.get("/api/auth/get/user", UserEp.getUserDetails);
+export function initPostsRoutes(app: Express) {
 
   app.post(
-    "/api/auth/reset/password",
-    UserEp.resetPasswordValidationRules(),
-    UserEp.resetPassword
+    "/api/auth/post/create",
+    PostsEp.postValidationRules(),
+    PostsEp.createPost
   );
 
+   app.post('/api/auth/post/:postId/like', PostsEp.saveLike);
+
+  app.post('/api/auth/post/:postId/comment', PostsEp.saveComment);
+  
+  app.delete(
+    '/api/auth/post/:postId',
+    PostsMiddleware.canDeletePost,
+    PostsEp.deletePost
+  );
+
+  app.delete(
+    '/api/auth/comment/:postId/:commentId',
+     PostsMiddleware.canDeleteComment,
+    PostsEp.deleteComment
+  );
+
+  app.delete(
+    '/api/auth/like/:postId/:likeId',
+     PostsMiddleware.canRemoveLike,
+    PostsEp.removeLike
+  );
 
 }
