@@ -20,6 +20,23 @@ export namespace PostsDao {
       throw error;
     }
   }
+
+
+export async function updatePost(postId: string, updatedData: any): Promise<DPosts | null> {
+  try {
+    const post = await Posts.findOneAndUpdate(
+      { _id: new ObjectId(postId) },
+      { $set: updatedData },
+      { new: true }
+    );
+
+    return post;
+  } catch (error) {
+    console.error("Error updating post:", error);
+    return null;
+  }
+}
+
   export async function getAllPosts(): Promise<IPosts[]> {
     try {
       const allPosts = await Posts.find().exec();

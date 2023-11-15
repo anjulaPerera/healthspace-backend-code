@@ -4,25 +4,32 @@ import { PostsEp } from "../end-points/posts-ep";
 
 export function initPostsRoutes(app: Express) {
 
-  app.post(                                               //WORKING
+  app.post(                                                       //WORKING
     "/api/auth/post/create",
     PostsEp.postValidationRules(),
     PostsEp.createPost
   );
-  app.get(                                                //WORKING
+  app.get(                                                        //WORKING
     "/api/auth/post/get/:userId",
     PostsEp.getPostsByPostedUser
   );
-  app.get(                                                //WORKING
+  app.put(                                                        //WORKING
+    '/api/auth/post/:postId/update/:userId',
+    PostsMiddleware.canUpdatePost,
+    PostsEp.updatePost);
+
+  app.get(                                                        //WORKING
     "/api/auth/posts/get",
     PostsEp.getAllPosts
   );
 
+  app.post(                                                       //WORKING (Odd clicks = like, even clicks = unlike)
+    '/api/auth/post/:postId/like/:userId', 
+    PostsEp.saveLike);
 
-
-   app.post('/api/auth/post/:postId/like/:userId', PostsEp.saveLike);                        //WORKING (Odd clicks = like, even clicks = unlike)
-
-  app.post('/api/auth/post/:postId/comment/:userId', PostsEp.saveComment);                   //WORKING
+  app.post(                                                       //WORKING
+    '/api/auth/post/:postId/comment/:userId',
+    PostsEp.saveComment);
   
   app.delete(                                                     //WORKING
     '/api/auth/post/:postId/:userId',
@@ -32,7 +39,7 @@ export function initPostsRoutes(app: Express) {
 
   app.delete(                                                     //WORKING
     '/api/auth/post/delete/comment/:postId/:commentId/:userId',
-     PostsMiddleware.canDeleteComment,
+    PostsMiddleware.canDeleteComment,
     PostsEp.deleteComment
   );
 

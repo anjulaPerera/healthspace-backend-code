@@ -91,6 +91,49 @@ export namespace PostsEp {
       return res.sendError("Something Went Wrong!!");
     }
   }
+
+  // In PostsEp
+
+export async function updatePost(
+  req: Request,
+  res: Response,
+  next: NextFunction
+) {
+  try {
+    const postId = req.params.postId;
+    const userId = req.params.userId;
+
+    const post = await PostsDao.getPostById(postId);
+
+    if (!post) {
+      return res.sendError("Post not found");
+    }
+
+    if (post.userId.toString() !== userId.toString()) {
+      return res.sendError("You do not have permission to update this post");
+    }
+
+    const { content } = req.body;
+
+    const updatedData: Partial<DPosts> = {};
+
+    if (content) {
+      updatedData.content = content;
+    }
+
+    const updatedPost = await PostsDao.updatePost(postId, updatedData);
+
+    if (!updatedPost) {
+      return res.sendError("Failed to update post");
+    }
+
+    return res.sendSuccess(updatedPost, "Post Updated Successfully!");
+  } catch (err) {
+    console.log("in catch", err);
+    return res.sendError(err);
+  }
+}
+
     export async function getAllPosts(
     req: Request,
     res: Response,

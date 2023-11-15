@@ -4,6 +4,35 @@ import UserType from "../enums/UserType";
 import { PostsDao } from "../dao/posts-dao";
 
 export class PostsMiddleware {
+  public static async canUpdatePost(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const postId = req.params.postId;
+    const userId = req.params.userId;
+
+    try {
+      const post = await PostsDao.getPostById(postId);
+
+      if (!post) {
+        return res.sendError("Post not found");
+      }
+
+      if (post.userId.toString() !== userId.toString()) {
+        console.log("post.userId", post.userId);
+        console.log("userId", userId);
+        return res.sendError("You do not have permission to update this post");
+      }
+
+      next();
+    } catch (err) {
+      console.error("Error checking post update permission:", err);
+      return res.sendError(
+        "Something went wrong while checking post update permission"
+      );
+    }
+  }
   public static async canDeletePost(
     req: Request,
     res: Response,
@@ -19,7 +48,7 @@ export class PostsMiddleware {
         return res.sendError("Post not found");
       }
 
-      if (post.userId.toString() !== userId) {
+      if (post.userId.toString() !== userId.toString()) {
         return res.sendError("You do not have permission to delete this post");
       }
 
@@ -66,33 +95,4 @@ export class PostsMiddleware {
     }
   }
 
-  public static async canRemoveLike(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    const likeId = req.params.likeId;
-    const postId = req.params.postId;
-
-    const userId = req.query.id;
-
-    try {
-      const like = await PostsDao.getLikeById(postId, likeId);
-
-      if (!like) {
-        return res.sendError("Like not found");
-      }
-
-      if (like.userId.toString() !== userId) {
-        return res.sendError("You do not have permission to remove this like");
-      }
-
-      next();
-    } catch (err) {
-      console.error("Error checking like removal permission:", err);
-      return res.sendError(
-        "Something went wrong while checking like removal permission"
-      );
-    }
-  }
 }
