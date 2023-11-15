@@ -9,6 +9,12 @@ export namespace UserDao {
     return userFound;
   }
 
+   export async function registerAnUser(data: DUser): Promise<IUser> {
+    const saveUser = new User(data);
+    let userSaved = await saveUser.save();
+    return userSaved;
+  }
+
   export async function loginWithEmail(
     email: string,
     password: string,
@@ -45,11 +51,11 @@ export namespace UserDao {
     return updatePassword;
   }
 
-   export async function getUserByEmail(email: string): Promise<IUser | null> {
+  export async function getUserByEmail(email: string): Promise<IUser | null> {
     return await User.findOne({ email: email });
   }
-   export async function getUserById(id: any): Promise<IUser | null> {
-    return await User.findOne({ _id  : id });
+  export async function getUserById(id: any): Promise<IUser | null> {
+    return await User.findOne({ _id: id });
   }
   export async function getUsersByFreePackage(): Promise<IUser[]> {
     return await User.find({ packageBought: "FREE" }).exec();
@@ -60,8 +66,4 @@ export namespace UserDao {
   export async function getUsersByGoldPackage(): Promise<IUser[]> {
     return await User.find({ packageBought: "GOLD" }).exec();
   }
-
-
-
-
 }

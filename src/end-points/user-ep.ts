@@ -14,9 +14,15 @@ import { UserDao } from "../dao/user-dao";
 import { Validations } from "../common/validation";
 import { Util } from "../common/Util";
 import UserStatus from "../enums/UserStatus";
+import upload from "../middleware/upload-images";
 const { ObjectId } = require("mongodb");
 
+
+
 export namespace UserEp {
+
+  
+
   export function authenticateWithEmailValidationRules(): ValidationChain[] {
     return [
       Validations.email(),
@@ -37,8 +43,19 @@ export namespace UserEp {
         .withMessage("remember is not valid type"),
     ];
   }
+  // export function signUpWithEmailValidationRules(): ValidationChain[] {
+  //   return [Validations.email(), Validations.password()];
+  // }
+
   export function signUpWithEmailValidationRules(): ValidationChain[] {
-    return [Validations.email(), Validations.password()];
+    return [
+      check("email")
+        .notEmpty()
+        .withMessage("Email is required!!")
+        .isString()
+        .withMessage("email is not a String"),
+      Validations.password(),
+    ];
   }
 
   export async function authenticateWithEmail(
@@ -147,32 +164,59 @@ export namespace UserEp {
     }
   }
 
+ 
+  
   export async function signUpUser(
-    req: Request,
-    res: Response,
-    next: NextFunction
+  req: Request,
+  res: Response,
+  next: NextFunction
   ) {
     try {
-      const errors = validationResult(req);
-      if (!errors.isEmpty()) {
-        return res.sendError(errors.array()[0]["msg"]);
-      }
+
+
+
+    // const errors = validationResult(req);
+    // if (!errors.isEmpty()) {
+    //   return res.sendError(errors.array()[0]['msg']);
+    // }
+
+
+      
+
 
       const isCustomerFound = await UserDao.doesUserExist(req.body.email);
-      if (isCustomerFound) {
-        return res.sendError("Sorry This Email Already Exists");
+    if (isCustomerFound) {
+      return res.sendError('Sorry, this email already exists');
+    }
+
+    const uploadFields = upload.fields([
+      { name: 'profilePicture', maxCount: 1 },
+      { name: 'coverImage', maxCount: 1 },
+    ]);
+      
+
+    uploadFields(req, res, async function (err: any) {
+      if (err) {
+        return res.sendError('Error uploading files');
       }
 
       const name = req.body.name;
-      const email = req.body.email;
       const dob = req.body.dob;
       const city = req.body.city;
-      const phone = req.body.phone;  
+      const phone = req.body.phone;
       const userType = req.body.userType;
       const password = req.body.password;
       const isVerified = false;
       const occupation = req.body.occupation;
-      
+      const email = req.body.email;
+    
+
+
+      const profilePicture = req.files['profilePicture'] ? req.files['profilePicture'][0].filename : null;
+      const coverImage = req.files['coverImage'] ? req.files['coverImage'][0].filename : null;
+
+      console.log('profilePicture', profilePicture);
+      console.log('coverImage', coverImage);
 
       const verificationToken = Util.generateVerificationToken();
 
@@ -188,33 +232,36 @@ export namespace UserEp {
         city: city,
         phone: phone,
         occupation: occupation,
-
+        profilePicture: profilePicture,
+        coverImage: coverImage,
       };
 
-      const saveUser = await AdminDao.registerAnUser(userData);
+      const saveUser = await UserDao.registerAnUser(userData);
+
       if (!saveUser) {
-        return res.sendError("Registration failed");
+        return res.sendError('Registration failed');
       }
 
       Util.sendVerificationEmail(email, verificationToken).then(
         function (response) {
           if (response === 1) {
-            console.log("Email Sent Successfully!");
+            console.log('Email Sent Successfully!');
           } else {
-            console.log("Failed to Send The Email!");
+            console.log('Failed to Send The Email!');
           }
         },
         function (error) {
-          console.log("Email Function Failed!");
+          console.log('Email Function Failed!');
         }
       );
 
-      console.log("saveUser", saveUser);
-      return res.sendSuccess(saveUser, "User Registered!");
-    } catch (err) {
-      return res.sendError(err);
-    }
+      console.log('saveUser', saveUser);
+      return res.sendSuccess(saveUser, 'User Registered!');
+    });
+  } catch (err) {
+    return res.sendError(err);
   }
+}
 
   export async function verifyEmail(
     req: Request,

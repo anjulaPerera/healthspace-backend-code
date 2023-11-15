@@ -3,7 +3,6 @@ import { Types } from "mongoose";
 
 interface Common {
   name?: string;
-  email?: string;
   userType?: string;
   password?: string;
   userStatus?: string;
@@ -13,6 +12,9 @@ interface Common {
   city?: string;
   phone?: number;
   occupation?: string;
+  profilePicture?: string;
+  coverImage?: string;
+  email?:string
 
 }
 

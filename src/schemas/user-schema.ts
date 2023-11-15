@@ -26,11 +26,7 @@ export const userSchema = new mongoose.Schema<IUser>(
       type: Schema.Types.String,
       required: false,
     },
-    email: {
-      type: Schema.Types.String,
-      required: false,
-      unique: true,
-    },
+
     userType: {
       type: Schema.Types.String,
       required: false,
@@ -63,6 +59,18 @@ export const userSchema = new mongoose.Schema<IUser>(
       type: Schema.Types.String,
       required: false,
     },
+    profilePicture: {
+      type: Schema.Types.String,
+      required: false,
+    },
+    coverImage: {
+      type: Schema.Types.String,
+      required: false,
+    },
+    email: {
+      type: Schema.Types.String,
+      required: true,
+    }
   },
   UserSchemaOptions
 );
