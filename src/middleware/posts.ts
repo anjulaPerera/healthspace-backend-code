@@ -10,7 +10,7 @@ export class PostsMiddleware {
     next: NextFunction
   ) {
     const postId = req.params.postId;
-    const userId = req.query.id;
+    const userId = req.params.userId;
 
     try {
       const post = await PostsDao.getPostById(postId);
@@ -38,16 +38,20 @@ export class PostsMiddleware {
   ) {
     const commentId = req.params.commentId;
     const postId = req.params.postId;
-    const userId = req.query.id;
+    const userId = req.params.userId;
+
+       console.log("postId delete comment", postId);
+      console.log("commentId delete comment", commentId);
+      console.log("userId delete comment", userId);
 
     try {
       const comment = await PostsDao.getCommentById(postId, commentId);
 
       if (!comment) {
-        return res.sendError("Comment not found");
+        return res.sendError("Comment not found !!!!!!!!!");
       }
 
-      if (comment.userId.toString() !== userId) {
+      if (comment.userId.toString() !== userId.toString()) {
         return res.sendError(
           "You do not have permission to delete this comment"
         );

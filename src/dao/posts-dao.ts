@@ -12,7 +12,7 @@ export namespace PostsDao {
     }
   }
 
-  export async function getUserPosts(userId: string): Promise<IPosts[]> {
+  export async function getUserPostsByPostedUser(userId: string): Promise<IPosts[]> {
     try {
       const userPosts = await Posts.find({ userId }).exec();
       return userPosts;
@@ -20,38 +20,84 @@ export namespace PostsDao {
       throw error;
     }
   }
-
-  export async function saveLike(
-    postId: string,
-    userId: string
-  ): Promise<IPosts | null> {
+  export async function getAllPosts(): Promise<IPosts[]> {
     try {
-      const post = await this.getPostById(postId);
-
-      if (!post) {
-        throw new Error("Post not found");
-      }
-
-      // Check if the user has already liked the post
-      const alreadyLiked = post.likesFrom.some(
-        (like) => like.userId.toString() === userId
-      );
-
-      if (alreadyLiked) {
-        throw new Error("User has already liked this post");
-      }
-
-      // Add the new like
-      post.likesFrom.push({ userId: new ObjectId(userId) });
-
-      // Save the updated post
-      const updatedPost = await post.save();
-      return updatedPost;
+      const allPosts = await Posts.find().exec();
+      return allPosts;
     } catch (error) {
-      console.error("Error saving like:", error);
-      return null;
+      throw error;
     }
   }
+
+  // export async function saveLike(
+  //   postId: string,
+  //   userId: string
+  // ): Promise<IPosts | null> {
+  //   try {
+  //     const post = await this.getPostById(postId);
+
+  //     if (!post) {
+  //       throw new Error("Post not found");
+  //     }
+
+  //     const alreadyLiked = post.likesFrom.some(
+  //       (like) => like.userId.toString() === userId
+  //     );
+
+  //     if (alreadyLiked) {
+  //       throw new Error("User has already liked this post");
+  //     }
+
+  //     // Add the new like
+  //     post.likesFrom.push({ userId: new ObjectId(userId) });
+
+  //     // Save the updated post
+  //     const updatedPost = await post.save();
+  //     return updatedPost;
+  //   } catch (error) {
+  //     console.error("Error saving like:", error);
+  //     return null;
+  //   }
+  // }
+
+export async function saveLike(
+  postId: string,
+  userId: string
+): Promise<IPosts | null> {
+  try {
+    const post = await this.getPostById(postId);
+    console.log("post save like dao",post);
+
+    if (!post) {
+      throw new Error("Post not found");
+    }
+
+      console.log('Current likesFrom:', post.likesFrom);
+    const alreadyLiked = post.likesFrom.some((like) => {
+      console.log('Comparing:', like.userId.toString(), "AND",  userId);
+      return like.userId.toString() === userId.toString();
+    });
+
+    console.log("alreadyLiked",alreadyLiked);
+
+    if (alreadyLiked) {
+      console.log("already liked");
+      post.likesFrom = post.likesFrom.filter(
+        (like) => like.userId.toString() !== userId.toString()
+      );
+    } else {
+         console.log("not already liked");
+      post.likesFrom.push({ userId: new ObjectId(userId) });
+    }
+
+    const updatedPost = await post.save();
+    return updatedPost;
+  } catch (error) {
+    console.error("Error saving like:", error);
+    return null;
+  }
+}
+
 
   export async function saveComment(
     postId: string,

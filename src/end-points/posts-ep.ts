@@ -73,16 +73,35 @@ export namespace PostsEp {
     return res.sendError(err);
   }
 }
-    export async function getPosts(
+    export async function getPostsByPostedUser(
     req: Request,
     res: Response,
     next: NextFunction
     ) {
-            const userId = req.query.id as string;
+      const userId = req.params.userId;
+      
 
       try {
-        const userPosts = await PostsDao.getUserPosts(userId);
+        const userPosts = await PostsDao.getUserPostsByPostedUser(userId);
+
+        console.log("userPosts",userPosts);
      userPosts ? res.sendSuccess(userPosts, "User posts Found!"): res.sendError("No posts found");
+      
+    } catch (err) {
+      return res.sendError("Something Went Wrong!!");
+    }
+  }
+    export async function getAllPosts(
+    req: Request,
+    res: Response,
+    next: NextFunction
+    ) {
+
+      try {
+        const posts = await PostsDao.getAllPosts();
+
+        console.log("posts",posts);
+     posts ? res.sendSuccess(posts, "User posts Found!"): res.sendError("No posts found");
       
     } catch (err) {
       return res.sendError("Something Went Wrong!!");
@@ -96,10 +115,13 @@ export namespace PostsEp {
   ) {
     try {
       const postId = req.params.postId;
-      const userId = req.query.id;
+      const userId = req.params.userId;
 
       const objectId = new ObjectId(userId);
 
+      console.log('postId', postId);
+      console.log('userId', userId);
+      console.log('objectId', objectId);
       const updatedPost = await PostsDao.saveLike(postId, objectId);
 
       if (!updatedPost) {
@@ -120,7 +142,7 @@ export namespace PostsEp {
   ) {
     try {
       const postId = req.params.postId;
-      const userId = req.query.id;
+      const userId = req.params.userId;
       const text = req.body.text;
 
       const objectId = new ObjectId(userId);
@@ -151,7 +173,7 @@ export namespace PostsEp {
   ) {
     try {
       const postId = req.params.postId;
-      const userId = req.query.id;
+      const userId = req.params.userId;
 
       const post = await PostsDao.getPostById(postId);
 
@@ -181,12 +203,19 @@ export namespace PostsEp {
     res: Response,
     next: NextFunction
   ) {
+    console.log("in delete comment");
     try {
+      console.log("in try");
       const postId = req.params.postId;
       const commentId = req.params.commentId;
-      const userId = req.query.id;
+      const userId = req.params.userId;
+
+      console.log("postId delete comment", postId);
+      console.log("commentId delete comment", commentId);
+      console.log("userId delete comment", userId);
 
       const comment = await PostsDao.getCommentById(postId, commentId);
+      console.log("delete comment - comment", comment);
 
       if (!comment) {
         return res.sendError("Comment not found");
@@ -209,38 +238,7 @@ export namespace PostsEp {
     }
   }
 
-  export async function removeLike(
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ) {
-    try {
-      const postId = req.params.postId;
-      const likeId = req.params.likeId;
-      const userId = req.query.id;
-
-      const like = await PostsDao.getLikeById(postId, likeId);
-
-      if (!like) {
-        return res.sendError("Like not found");
-      }
-
-      if (like.userId.toString() !== userId) {
-        return res.sendError("You do not have permission to remove this like");
-      }
-
-      const updatedPost = await PostsDao.removeLike(postId, likeId);
-
-      if (!updatedPost) {
-        return res.sendError("Failed to remove like");
-      }
-
-      return res.sendSuccess(updatedPost, "Like Removed Successfully!");
-    } catch (err) {
-      console.log("in catch", err);
-      return res.sendError(err);
-    }
-  }
+ 
 
  
  
