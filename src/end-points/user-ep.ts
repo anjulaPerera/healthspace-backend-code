@@ -172,18 +172,6 @@ export namespace UserEp {
   next: NextFunction
   ) {
     try {
-
-
-
-    // const errors = validationResult(req);
-    // if (!errors.isEmpty()) {
-    //   return res.sendError(errors.array()[0]['msg']);
-    // }
-
-
-      
-
-
       const isCustomerFound = await UserDao.doesUserExist(req.body.email);
     if (isCustomerFound) {
       return res.sendError('Sorry, this email already exists');

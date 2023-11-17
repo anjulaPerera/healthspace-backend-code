@@ -11,8 +11,8 @@ export function initUserRoutes(app: Express) {
   );
   app.post(
     "/api/public/signup",
-    // UserEp.signUpWithEmailValidationRules(),
-
+    upload.single("profilePicture"),
+    upload.single("coverImage"),
     UserEp.signUpUser
   );
   app.get("/api/public/verify-email", UserEp.verifyEmail);
