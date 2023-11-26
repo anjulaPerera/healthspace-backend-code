@@ -175,18 +175,26 @@ export namespace UserEp {
       const isCustomerFound = await UserDao.doesUserExist(req.body.email);
     if (isCustomerFound) {
       return res.sendError('Sorry, this email already exists');
-    }
+      }
+      
+      //   const profilePicture = req.files && req.files['profilePicture']
+      // ? req.files['profilePicture'][0].filename
+      // : null;
 
-    const uploadFields = upload.fields([
-      { name: 'profilePicture', maxCount: 1 },
-      { name: 'coverImage', maxCount: 1 },
-    ]);
+    // const coverImage = req.files && req.files['coverImage']
+    //   ? req.files['coverImage'][0].filename
+    //   : null;
+
+    // const uploadFields = upload.fields([
+    //   { name: 'profilePicture', maxCount: 1 },
+    //   { name: 'coverImage', maxCount: 1 },
+    // ]);
       
 
-    uploadFields(req, res, async function (err: any) {
-      if (err) {
-        return res.sendError('Error uploading files');
-      }
+      // uploadFields(req, res, async function (err: any) {
+      // if (err) {
+      //   return res.sendError('Error uploading files');
+      // }
 
       const name = req.body.name;
       const dob = req.body.dob;
@@ -200,11 +208,11 @@ export namespace UserEp {
     
 
 
-      const profilePicture = req.files['profilePicture'] ? req.files['profilePicture'][0].filename : null;
-      const coverImage = req.files['coverImage'] ? req.files['coverImage'][0].filename : null;
+      // const profilePicture = req.files['profilePicture'] ? req.files['profilePicture'][0].filename : null;
+      // const coverImage = req.files['coverImage'] ? req.files['coverImage'][0].filename : null;
 
-      console.log('profilePicture', profilePicture);
-      console.log('coverImage', coverImage);
+      // console.log('profilePicture', profilePicture);
+      // console.log('coverImage', coverImage);
 
       const verificationToken = Util.generateVerificationToken();
 
@@ -220,8 +228,8 @@ export namespace UserEp {
         city: city,
         phone: phone,
         occupation: occupation,
-        profilePicture: profilePicture,
-        coverImage: coverImage,
+        // profilePicture: profilePicture,
+        // coverImage: coverImage,
       };
 
       const saveUser = await UserDao.registerAnUser(userData);
@@ -245,7 +253,8 @@ export namespace UserEp {
 
       console.log('saveUser', saveUser);
       return res.sendSuccess(saveUser, 'User Registered!');
-    });
+      // }
+      // );
   } catch (err) {
     return res.sendError(err);
   }

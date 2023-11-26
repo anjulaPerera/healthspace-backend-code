@@ -1,6 +1,8 @@
 import { Express } from "express";
 import { UserEp } from "../end-points/user-ep";
-import upload from "../middleware/upload-images";
+// import upload from "../middleware/upload-images";
+// const multer = require('multer');
+// const upload = multer({ dest: 'uploads/' });
 
 export function initUserRoutes(app: Express) {
   /* PUBLIC ROUTES */
@@ -11,8 +13,8 @@ export function initUserRoutes(app: Express) {
   );
   app.post(
     "/api/public/signup",
-    upload.single("profilePicture"),
-    upload.single("coverImage"),
+    // upload.single("profilePicture"),
+    // upload.single("coverImage"),
     UserEp.signUpUser
   );
   app.get("/api/public/verify-email", UserEp.verifyEmail);
