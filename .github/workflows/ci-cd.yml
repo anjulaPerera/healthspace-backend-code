@@ -9,10 +9,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
 
-    strategy:
-      matrix:
-        node-version: [10.x, 12.x, 14.x, 16.x, 18.x]
-
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v3
@@ -20,7 +16,7 @@ jobs:
       - name: Set Up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: ${{ matrix.node-version }}
+          node-version: 14.15.5
 
       - name: Install Dependencies
         run: npm install
