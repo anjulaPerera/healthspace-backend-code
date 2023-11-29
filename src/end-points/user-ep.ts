@@ -188,11 +188,16 @@ export namespace UserEp {
       const occupation = req.body.occupation;
       const email = req.body.email;
 
-      const profilePicture = req.file;
       console.log("req.file", req.file)
       console.log("req.body", req.body)
-      console.log('profilePicture from request', profilePicture)
+
+
+
+      const coverImage = req.files['coverImage'] ? `uploads/${req.files['coverImage'][0].filename}` : undefined;
+      const profilePicture = req.files['profilePicture'] ? `uploads/${req.files['profilePicture'][0].filename}` : undefined;
     
+      console.log('profilePicture from request', profilePicture)
+      console.log('coverImage from request', coverImage)
 
       const verificationToken = Util.generateVerificationToken();
 
@@ -208,9 +213,8 @@ export namespace UserEp {
         city: city,
         phone: phone,
         occupation: occupation,
-          profilePicture: profilePicture ? `uploads/${profilePicture.filename}` : undefined,
-        // profilePicture: profilePicture,
-        // coverImage: coverImage,
+        profilePicture: profilePicture,
+        coverImage: coverImage,
       };
 
       const saveUser = await UserDao.registerAnUser(userData);

@@ -25,7 +25,10 @@ export function initUserRoutes(app: Express) {
   );
   app.post(
     "/api/public/signup",
-    upload.single('profilePicture'),
+    upload.fields([
+    { name: 'profilePicture', maxCount: 1 },
+    { name: 'coverImage', maxCount: 1 },
+  ]),
     UserEp.signUpUser
   );
   app.get("/api/public/verify-email", UserEp.verifyEmail);
