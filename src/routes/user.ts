@@ -36,6 +36,7 @@ export function initUserRoutes(app: Express) {
 
   /* AUTH ROUTES */
   app.get("/api/auth/get/user", UserEp.getUserDetails);
+  app.get("/api/auth/get/user/:userId", UserEp.getUserById);
 
   app.post(
     "/api/auth/reset/password",

@@ -14,7 +14,7 @@ interface Like {
 
 interface Common {
   content: string;
-  images?: Buffer;
+  images?: string;
   likesFrom: Like[];
   commentsFrom: Comment[];
   userId: mongoose.Types.ObjectId;

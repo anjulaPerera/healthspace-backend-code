@@ -24,11 +24,11 @@ export function initPostsRoutes(app: Express) {
   );
 
   app.post(                                                       //WORKING (Odd clicks = like, even clicks = unlike)
-    '/api/auth/post/:postId/like/:userId', 
+    '/api/public/post/:postId/like/:userId', 
     PostsEp.saveLike);
 
   app.post(                                                       //WORKING
-    '/api/auth/post/:postId/comment/:userId',
+    '/api/public/post/:postId/comment/:userId',
     PostsEp.saveComment);
   
   app.delete(                                                     //WORKING

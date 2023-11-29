@@ -112,6 +112,26 @@ export namespace UserEp {
     }
   }
 
+  export async function getUserById(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.params.userId;
+
+      const user = await UserDao.getUserById(userId);
+
+      if (!user) {
+        return res.sendError("User Not Found");
+      }
+
+      res.sendSuccess(user, "User Found!");
+    } catch (err) {
+      return res.sendError("Something Went Wrong!!");
+    }
+  }
+
 
   export function resetPasswordValidationRules(): ValidationChain[] {
     return [
