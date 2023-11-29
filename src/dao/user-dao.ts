@@ -9,11 +9,17 @@ export namespace UserDao {
     return userFound;
   }
 
-   export async function registerAnUser(data: DUser): Promise<IUser> {
+  export async function registerAnUser(data: DUser): Promise<IUser> {
+  try {
     const saveUser = new User(data);
-    let userSaved = await saveUser.save();
+    const userSaved = await saveUser.save();
     return userSaved;
+  } catch (error) {
+    console.error('Error saving user:', error);
+    throw error;
   }
+}
+
 
   export async function loginWithEmail(
     email: string,

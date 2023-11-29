@@ -1,8 +1,20 @@
 import { Express } from "express";
 import { UserEp } from "../end-points/user-ep";
-// import upload from "../middleware/upload-images";
-// const multer = require('multer');
-// const upload = multer({ dest: 'uploads/' });
+import multer from 'multer';
+
+const storage = multer.diskStorage({
+  destination: function (req, file, cb) {
+    cb(null, 'uploads/'); // specify the folder where files will be stored
+  },
+  filename: function (req, file, cb) {
+    cb(null, Date.now() + '-' + file.originalname); // specify the file name
+  },
+});
+
+const upload = multer({ storage: storage, limits: { fileSize: 10000000 } });
+
+
+
 
 export function initUserRoutes(app: Express) {
   /* PUBLIC ROUTES */
@@ -13,8 +25,7 @@ export function initUserRoutes(app: Express) {
   );
   app.post(
     "/api/public/signup",
-    // upload.single("profilePicture"),
-    // upload.single("coverImage"),
+    upload.single('profilePicture'),
     UserEp.signUpUser
   );
   app.get("/api/public/verify-email", UserEp.verifyEmail);

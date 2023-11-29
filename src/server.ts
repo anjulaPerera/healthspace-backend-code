@@ -5,6 +5,8 @@ import passportStartup from "./startup/passport";
 import * as routes from "./routes";
 import { Authentication } from "./middleware/authentication";
 import { ResponseHandler } from "./middleware/response-handler";
+import express from "express";
+import path from "path";
 passportStartup(app);
 const cors = require("cors");
 require("dotenv").config();
@@ -30,6 +32,8 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(ResponseHandler);
 app.use("/api/auth", Authentication.verifyToken);
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
+
 
 routes.initRoutes(app);
 

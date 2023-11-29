@@ -167,7 +167,7 @@ export namespace UserEp {
  
   
   export async function signUpUser(
-  req: Request,
+  req: Request & { file: any },
   res: Response,
   next: NextFunction
   ) {
@@ -177,24 +177,6 @@ export namespace UserEp {
       return res.sendError('Sorry, this email already exists');
       }
       
-      //   const profilePicture = req.files && req.files['profilePicture']
-      // ? req.files['profilePicture'][0].filename
-      // : null;
-
-    // const coverImage = req.files && req.files['coverImage']
-    //   ? req.files['coverImage'][0].filename
-    //   : null;
-
-    // const uploadFields = upload.fields([
-    //   { name: 'profilePicture', maxCount: 1 },
-    //   { name: 'coverImage', maxCount: 1 },
-    // ]);
-      
-
-      // uploadFields(req, res, async function (err: any) {
-      // if (err) {
-      //   return res.sendError('Error uploading files');
-      // }
 
       const name = req.body.name;
       const dob = req.body.dob;
@@ -205,14 +187,12 @@ export namespace UserEp {
       const isVerified = false;
       const occupation = req.body.occupation;
       const email = req.body.email;
+
+      const profilePicture = req.file;
+      console.log("req.file", req.file)
+      console.log("req.body", req.body)
+      console.log('profilePicture from request', profilePicture)
     
-
-
-      // const profilePicture = req.files['profilePicture'] ? req.files['profilePicture'][0].filename : null;
-      // const coverImage = req.files['coverImage'] ? req.files['coverImage'][0].filename : null;
-
-      // console.log('profilePicture', profilePicture);
-      // console.log('coverImage', coverImage);
 
       const verificationToken = Util.generateVerificationToken();
 
@@ -228,6 +208,7 @@ export namespace UserEp {
         city: city,
         phone: phone,
         occupation: occupation,
+          profilePicture: profilePicture ? `uploads/${profilePicture.filename}` : undefined,
         // profilePicture: profilePicture,
         // coverImage: coverImage,
       };
@@ -299,7 +280,4 @@ export namespace UserEp {
       return res.sendError("Something Went Wrong");
     }
   }
-
- 
- 
 }

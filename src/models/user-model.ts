@@ -12,7 +12,7 @@ interface Common {
   city?: string;
   phone?: number;
   occupation?: string;
-  profilePicture?: string;
+  profilePicture?: string | Buffer;
   coverImage?: string;
   email?:string
 
