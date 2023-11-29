@@ -42,8 +42,9 @@ export namespace PostsEp {
     }
 
 
+
     const content = req.body.content;
-    // const images = req.body.images;
+
     const userId = req.query.id;
 
 
@@ -143,7 +144,6 @@ export async function updatePost(
       try {
         const posts = await PostsDao.getAllPosts();
 
-        console.log("posts",posts);
      posts ? res.sendSuccess(posts, "User posts Found!"): res.sendError("No posts found");
       
     } catch (err) {
