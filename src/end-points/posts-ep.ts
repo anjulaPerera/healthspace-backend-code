@@ -169,6 +169,24 @@ export async function updatePost(
       return res.sendError("Something Went Wrong!!");
     }
   }
+  export async function getPostsByUserId(
+    req: Request,
+    res: Response,
+    next: NextFunction
+    ) {
+      const userId = req.params.userId;
+      
+
+      try {
+        const post = await PostsDao.getPostsByUserId(userId);
+
+        console.log("posts by user id",post);
+     post ? res.sendSuccess(post, "Posts Found!"): res.sendError("No posts found");
+      
+    } catch (err) {
+      return res.sendError("Something Went Wrong!!");
+    }
+  }
 
   export async function saveLike(
     req: Request,

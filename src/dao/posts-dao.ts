@@ -151,6 +151,14 @@ export async function saveLike(
       return null;
     }
   }
+  export async function getPostsByUserId(userId: string): Promise<IPosts[]> {
+    try {
+      const posts = await Posts.find({ userId }).exec();
+      return posts;
+    } catch (error) {
+      throw error;
+    }
+  }
 
   export async function getCommentById(
     postId: string,
