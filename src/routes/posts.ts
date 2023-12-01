@@ -23,6 +23,11 @@ export function initPostsRoutes(app: Express) {
     PostsEp.getAllPosts
   );
 
+    app.get(                                                        //WORKING
+    "/api/auth/posts/get/:postId",
+    PostsEp.getPostsByPostId
+  );
+
   app.post(                                                       //WORKING (Odd clicks = like, even clicks = unlike)
     '/api/auth/post/:postId/like/:userId', 
     PostsEp.saveLike);

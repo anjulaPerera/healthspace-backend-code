@@ -151,6 +151,25 @@ export async function updatePost(
     }
   }
 
+  export async function getPostsByPostId(
+    req: Request,
+    res: Response,
+    next: NextFunction
+    ) {
+      const postId = req.params.postId;
+      
+
+      try {
+        const post = await PostsDao.getPostById(postId);
+
+        console.log("post",post);
+     post ? res.sendSuccess(post, "Post Found!"): res.sendError("No post found");
+      
+    } catch (err) {
+      return res.sendError("Something Went Wrong!!");
+    }
+  }
+
   export async function saveLike(
     req: Request,
     res: Response,
