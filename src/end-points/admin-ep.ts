@@ -75,14 +75,10 @@ export namespace AdminEp {
           password
       ).then(
         function (response) {
-          if (response === 1) {
-            console.log("Email Sent Successfully!");
-          } else {
-            console.log("Failed to Send The Email!");
-          }
+          console.log("Email Sent Successfully!");
         },
         function (error) {
-          console.log("Email Function Failed!");
+          console.log("Failed to Send The Email!");
           // return res.sendError("Email Function Failed!");
         }
       );
@@ -164,16 +160,48 @@ export namespace AdminEp {
         return res.sendError(errors.array()[0]["msg"]);
       }
 
-      const limit = Number(req.params.limit);
-      const offset = Number(req.params.offset);
+   
 
       //get user list
-      const userList = await AdminDao.getUsers(limit, offset);
+      const userList = await AdminDao.getUsers();
       if (!userList) {
         return res.sendError("Fetching Users Failed");
       }
 
       res.sendSuccess(userList, "Success!");
+    } catch (err) {
+      return res.sendError(err);
+    }
+  }
+
+  export async function deleteUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      // input validation
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.sendError(errors.array()[0]["msg"]);
+      }
+
+      // input parameters
+      const userId = req.params.userId;
+
+      // check if the user id exists in the user collection
+      const getUser = await AdminDao.doesUserIdExists(userId);
+      if (!getUser) {
+        return res.sendError("User Not Found!");
+      }
+
+      // delete the user
+      const deleteUser = await AdminDao.deleteUser(userId);
+      if (!deleteUser) {
+        return res.sendError("Failed to delete user");
+      }
+
+      res.sendSuccess(deleteUser, "User deleted successfully!");
     } catch (err) {
       return res.sendError(err);
     }

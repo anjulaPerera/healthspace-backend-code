@@ -1,6 +1,8 @@
 import { DPosts, IComment, ILike, IPosts } from "../models/posts-model";
 import Posts from "../schemas/posts-schema";
+import Listings from "../schemas/listing-schema";
 import { ObjectId } from "mongodb";
+import { IListing } from "../models/donation-listing-model";
 
 export namespace PostsDao {
   export async function savePost(postData: DPosts): Promise<IPosts | null> {
@@ -12,7 +14,9 @@ export namespace PostsDao {
     }
   }
 
-  export async function getUserPostsByPostedUser(userId: string): Promise<IPosts[]> {
+  export async function getUserPostsByPostedUser(
+    userId: string
+  ): Promise<IPosts[]> {
     try {
       const userPosts = await Posts.find({ userId }).exec();
       return userPosts;
@@ -21,26 +25,67 @@ export namespace PostsDao {
     }
   }
 
+  export async function updatePost(
+    postId: string,
+    updatedData: any
+  ): Promise<DPosts | null> {
+    try {
+      const post = await Posts.findOneAndUpdate(
+        { _id: new ObjectId(postId) },
+        { $set: updatedData },
+        { new: true }
+      );
 
-export async function updatePost(postId: string, updatedData: any): Promise<DPosts | null> {
-  try {
-    const post = await Posts.findOneAndUpdate(
-      { _id: new ObjectId(postId) },
-      { $set: updatedData },
-      { new: true }
-    );
-
-    return post;
-  } catch (error) {
-    console.error("Error updating post:", error);
-    return null;
+      return post;
+    } catch (error) {
+      console.error("Error updating post:", error);
+      return null;
+    }
   }
-}
 
   export async function getAllPosts(): Promise<IPosts[]> {
     try {
       const allPosts = await Posts.find().exec();
       return allPosts;
+    } catch (error) {
+      throw error;
+    }
+  }
+  export async function getAllListings(): Promise<IListing[]> {
+    try {
+      const allListings = await Listings.find().exec();
+      return allListings;
+    } catch (error) {
+      throw error;
+    }
+  }
+  export async function getAllOrganListings(): Promise<IListing[]> {
+    try {
+      const eqListings = await Listings.find({
+        donationType: "ORGAN",
+      }).exec();
+      return eqListings;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  export async function getAllEquipmentListings(): Promise<IListing[]> {
+    try {
+      const eqListings = await Listings.find({
+        donationType: "EQUIPMENT",
+      }).exec();
+      return eqListings;
+    } catch (error) {
+      throw error;
+    }
+  }
+  export async function getAllOtherListings(): Promise<IListing[]> {
+    try {
+      const otherListings = await Listings.find({
+        donationType: "OTHER",
+      }).exec();
+      return otherListings;
     } catch (error) {
       throw error;
     }
@@ -77,44 +122,43 @@ export async function updatePost(postId: string, updatedData: any): Promise<DPos
   //   }
   // }
 
-export async function saveLike(
-  postId: string,
-  userId: string
-): Promise<IPosts | null> {
-  try {
-    const post = await this.getPostById(postId);
-    console.log("post save like dao",post);
+  export async function saveLike(
+    postId: string,
+    userId: string
+  ): Promise<IPosts | null> {
+    try {
+      const post = await this.getPostById(postId);
+      console.log("post save like dao", post);
 
-    if (!post) {
-      throw new Error("Post not found");
+      if (!post) {
+        throw new Error("Post not found");
+      }
+
+      console.log("Current likesFrom:", post.likesFrom);
+      const alreadyLiked = post.likesFrom.some((like) => {
+        console.log("Comparing:", like.userId.toString(), "AND", userId);
+        return like.userId.toString() === userId.toString();
+      });
+
+      console.log("alreadyLiked", alreadyLiked);
+
+      if (alreadyLiked) {
+        console.log("already liked");
+        post.likesFrom = post.likesFrom.filter(
+          (like) => like.userId.toString() !== userId.toString()
+        );
+      } else {
+        console.log("not already liked");
+        post.likesFrom.push({ userId: new ObjectId(userId) });
+      }
+
+      const updatedPost = await post.save();
+      return updatedPost;
+    } catch (error) {
+      console.error("Error saving like:", error);
+      return null;
     }
-
-      console.log('Current likesFrom:', post.likesFrom);
-    const alreadyLiked = post.likesFrom.some((like) => {
-      console.log('Comparing:', like.userId.toString(), "AND",  userId);
-      return like.userId.toString() === userId.toString();
-    });
-
-    console.log("alreadyLiked",alreadyLiked);
-
-    if (alreadyLiked) {
-      console.log("already liked");
-      post.likesFrom = post.likesFrom.filter(
-        (like) => like.userId.toString() !== userId.toString()
-      );
-    } else {
-         console.log("not already liked");
-      post.likesFrom.push({ userId: new ObjectId(userId) });
-    }
-
-    const updatedPost = await post.save();
-    return updatedPost;
-  } catch (error) {
-    console.error("Error saving like:", error);
-    return null;
   }
-}
-
 
   export async function saveComment(
     postId: string,
@@ -195,7 +239,9 @@ export async function saveLike(
       });
 
       if (post) {
-        const like = post.likesFrom.find((l:any) => l._id.toString() === likeId);
+        const like = post.likesFrom.find(
+          (l: any) => l._id.toString() === likeId
+        );
         return like || null;
       } else {
         return null;

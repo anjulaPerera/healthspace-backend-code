@@ -11,7 +11,7 @@ export namespace AdminDao {
     return userSaved;
   }
 
-  export async function doesUserIdExists(userId: Types.ObjectId) {
+  export async function doesUserIdExists(userId: any) {
     const userFound = await User.findById(userId);
     return userFound;
   }
@@ -52,32 +52,14 @@ export namespace AdminDao {
 
     return updateUser;
   }
-  export async function updatePayLink(
-    userId: Types.ObjectId,
-    link: string,
-
-  ): Promise<IUser> {
-    let updateUser: IUser = await User.findOneAndUpdate(
-      { _id: userId },
-      {
-        $set: {
-          paymentLink: link,
-
-        },
-      },
-      { new: true }
-    );
-
-    return updateUser;
+  export async function deleteUser(userId: any): Promise<any> {
+    await User.deleteOne({ _id: userId });
   }
 
-
-  export async function getUsers(limit: number, offset: number) {
+  export async function getUsers() {
     const userFound = await User.find({
       userType: { $ne: UserType.SUPER_ADMIN },
-    })
-      .skip(limit * (offset - 1))
-      .limit(limit);
+    });
     return userFound;
   }
 }

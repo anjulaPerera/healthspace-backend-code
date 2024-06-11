@@ -4,15 +4,7 @@ import DonationData from "../enums/Donation";
 
 const { DonationType, BloodType, UrgencyOfNeed, Condition } = DonationData;
 
-const requestSchema = new mongoose.Schema({
-  content: {
-    type: String,
-    required: true,
-  },
-  title: {
-    type: String,
-    required: true,
-  },
+const donationRequestSchema = new mongoose.Schema({
   donationType: {
     type: String,
     enum: DonationType,
@@ -23,26 +15,31 @@ const requestSchema = new mongoose.Schema({
     bloodType: { type: String, enum: BloodType, required: false },
     urgencyOfNeed: { type: String, enum: UrgencyOfNeed, required: false },
     healthCareProviderDetails: { type: String, required: false },
-    otherDetails: { type: String, required: false },
   },
   equipmentDonationSpecifics: {
     typeOfEquipment: { type: String, required: false },
     condition: { type: String, enum: Condition, required: false },
-    otherDetails: { type: String, required: false },
   },
   otherDonationSpecifics: {
     typeOfDonation: { type: String, required: false },
     quantity: { type: Number, required: false },
     urgencyOfNeed: { type: String, enum: UrgencyOfNeed, required: false },
-    otherDetails: { type: String, required: false },
   },
   userId: {
     type: mongoose.Types.ObjectId,
     ref: "User",
     required: true,
   },
+  otherDetails: { type: String, required: false },
+  requestedAt: {
+    type: Date,
+    default: Date.now,
+  },
 });
 
-const Request = mongoose.model("Request", requestSchema);
+const DonationRequest = mongoose.model(
+  "onnationRequest",
+  donationRequestSchema
+);
 
-export default Request;
+export default DonationRequest;

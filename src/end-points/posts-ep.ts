@@ -1,4 +1,3 @@
-
 import { NextFunction, Request, Response } from "express";
 import {
   check,
@@ -16,6 +15,8 @@ import { Util } from "../common/Util";
 import UserStatus from "../enums/UserStatus";
 import { PostsDao } from "../dao/posts-dao";
 import { DPosts } from "../models/posts-model";
+import Listing from "../schemas/listing-schema";
+import DonationRequest from "../schemas/request-schema";
 const { ObjectId } = require("mongodb");
 
 export namespace PostsEp {
@@ -26,68 +27,151 @@ export namespace PostsEp {
         .withMessage("Content is required")
         .isString()
         .withMessage("loginMethod is not valid type"),
-
     ];
   }
 
   export async function createPost(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.sendError(errors.array()[0]['msg']);
-    }
-
-
-
-    const content = req.body.content;
-
-    const userId = req.query.id;
-
-
-  const objectId = new ObjectId(userId);
-
-
-    const postData: DPosts = {
-      userId: objectId,
-      content:content,
-      // images,
-      likesFrom: [],
-      commentsFrom: [],
-    };
-
-    const savedPost = await PostsDao.savePost(postData);
-
-    if (!savedPost) {
-      return res.sendError('Failed to save post');
-    }
-
-  
-
-    console.log('savedPost', savedPost);
-    return res.sendSuccess(savedPost , 'Post Saved Successfully!');
-  } catch (err) {
-    console.log("in catch",err);
-    return res.sendError(err);
-  }
-}
-    export async function getPostsByPostedUser(
     req: Request,
     res: Response,
     next: NextFunction
-    ) {
-      const userId = req.params.userId;
-      
+  ) {
+    try {
+      const errors = validationResult(req);
+      if (!errors.isEmpty()) {
+        return res.sendError(errors.array()[0]["msg"]);
+      }
 
-      try {
-        const userPosts = await PostsDao.getUserPostsByPostedUser(userId);
+      const content = req.body.content;
 
-        console.log("userPosts",userPosts);
-     userPosts ? res.sendSuccess(userPosts, "User posts Found!"): res.sendError("No posts found");
-      
+      const userId = req.query.id;
+
+      const objectId = new ObjectId(userId);
+
+      const postData: DPosts = {
+        userId: objectId,
+        content: content,
+        // images,
+        likesFrom: [],
+        commentsFrom: [],
+      };
+
+      const savedPost = await PostsDao.savePost(postData);
+
+      if (!savedPost) {
+        return res.sendError("Failed to save post");
+      }
+
+      // console.log("savedPost", savedPost);
+      return res.sendSuccess(savedPost, "Post Saved Successfully!");
+    } catch (err) {
+      console.log("in catch", err);
+      return res.sendError(err);
+    }
+  }
+
+  export async function createListing(req: Request, res: Response) {
+    console.log("inside createListing function");
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    // const {
+    //   donationType,
+    //   organDonationSpecifics,
+    //   equipmentDonationSpecifics,
+    //   otherDonationSpecifics,
+    //   userId,
+    // } = req.body;
+
+    console.log("req.body of listing request::::::::", req.body);
+    try {
+      // const newListing = new Listing({
+      //   donationType,
+      //   organDonationSpecifics,
+      //   equipmentDonationSpecifics,
+      //   otherDonationSpecifics,
+      //   userId,
+      // });
+      const reqBody = req.body;
+      const newListing = new Listing({
+        donationType: reqBody.donationType,
+        organDonationSpecifics: {
+          organName: reqBody.organName,
+          bloodType: reqBody.bloodType,
+          availabilityForDonation: reqBody.availabilityForDonation,
+          healthCareProviderDetails: reqBody.healthCareProviderDetails,
+        },
+        equipmentDonationSpecifics: {
+          typeOfEquipment: reqBody.typeOfEquipment,
+          condition: reqBody.eqCondition,
+          modelNumber: reqBody.modelNumber,
+          serialNumber: reqBody.serialNumber,
+          manufacturer: reqBody.manufacturer,
+          usageHistory: reqBody.usageHistory,
+        },
+        otherDonationSpecifics: {
+          typeOfDonation: reqBody.typeOfDonation,
+          quantity: reqBody.quantity,
+          expiryDate: reqBody.expiryDate,
+          condition: reqBody.condition,
+        },
+        userId: reqBody.userId,
+        otherDetails: reqBody.otherDetails,
+      });
+
+      console.log("newListing::::::::", newListing);
+
+      await newListing.save();
+      return res.sendSuccess(newListing, "Post Saved Successfully!");
+    } catch (error) {
+      console.log("error in createListing", error);
+      res.status(500).json({ error: error.message });
+    }
+  }
+  export async function createRequest(req: Request, res: Response) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return res.status(400).json({ errors: errors.array() });
+    }
+
+    const {
+      donationType,
+      organDonationSpecifics,
+      equipmentDonationSpecifics,
+      otherDonationSpecifics,
+      userId,
+    } = req.body;
+
+    try {
+      const newRequest = new DonationRequest({
+        donationType,
+        organDonationSpecifics,
+        equipmentDonationSpecifics,
+        otherDonationSpecifics,
+        userId,
+      });
+
+      await newRequest.save();
+      res.status(201).json(newRequest);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+  export async function getPostsByPostedUser(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const userId = req.params.userId;
+
+    try {
+      const userPosts = await PostsDao.getUserPostsByPostedUser(userId);
+
+      // console.log("userPosts", userPosts);
+      userPosts
+        ? res.sendSuccess(userPosts, "User posts Found!")
+        : res.sendError("No posts found");
     } catch (err) {
       return res.sendError("Something Went Wrong!!");
     }
@@ -95,76 +179,139 @@ export namespace PostsEp {
 
   // In PostsEp
 
-export async function updatePost(
-  req: Request,
-  res: Response,
-  next: NextFunction
-) {
-  try {
-    const postId = req.params.postId;
-    const userId = req.params.userId;
-
-    const post = await PostsDao.getPostById(postId);
-
-    if (!post) {
-      return res.sendError("Post not found");
-    }
-
-    if (post.userId.toString() !== userId.toString()) {
-      return res.sendError("You do not have permission to update this post");
-    }
-
-    const { content } = req.body;
-
-    const updatedData: Partial<DPosts> = {};
-
-    if (content) {
-      updatedData.content = content;
-    }
-
-    const updatedPost = await PostsDao.updatePost(postId, updatedData);
-
-    if (!updatedPost) {
-      return res.sendError("Failed to update post");
-    }
-
-    return res.sendSuccess(updatedPost, "Post Updated Successfully!");
-  } catch (err) {
-    console.log("in catch", err);
-    return res.sendError(err);
-  }
-}
-
-    export async function getAllPosts(
+  export async function updatePost(
     req: Request,
     res: Response,
     next: NextFunction
-    ) {
+  ) {
+    try {
+      const postId = req.params.postId;
+      const userId = req.params.userId;
 
-      try {
-        const posts = await PostsDao.getAllPosts();
+      const post = await PostsDao.getPostById(postId);
 
-     posts ? res.sendSuccess(posts, "User posts Found!"): res.sendError("No posts found");
-      
+      if (!post) {
+        return res.sendError("Post not found");
+      }
+
+      if (post.userId.toString() !== userId.toString()) {
+        return res.sendError("You do not have permission to update this post");
+      }
+
+      const { content } = req.body;
+
+      const updatedData: Partial<DPosts> = {};
+
+      if (content) {
+        updatedData.content = content;
+      }
+
+      const updatedPost = await PostsDao.updatePost(postId, updatedData);
+
+      if (!updatedPost) {
+        return res.sendError("Failed to update post");
+      }
+
+      return res.sendSuccess(updatedPost, "Post Updated Successfully!");
+    } catch (err) {
+      console.log("in catch", err);
+      return res.sendError(err);
+    }
+  }
+
+  export async function getAllPosts(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const posts = await PostsDao.getAllPosts();
+
+      posts
+        ? res.sendSuccess(posts, "User posts Found!")
+        : res.sendError("No posts found");
     } catch (err) {
       return res.sendError("Something Went Wrong!!");
     }
   }
+  export async function getAllListings(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const posts = await PostsDao.getAllListings();
 
+      posts
+        ? res.sendSuccess(posts, "User posts Found!")
+        : res.sendError("No posts found");
+    } catch (err) {
+      return res.sendError("Something Went Wrong!!");
+    }
+  }
+  export async function getOrganListings(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const posts = await PostsDao.getAllOrganListings();
+
+      posts
+        ? res.sendSuccess(posts, "Organ Listings Found!")
+        : res.sendError("No posts found");
+
+      console.log(
+        "ORGAN POSTS::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::",
+        posts
+      );
+    } catch (err) {
+      return res.sendError("Something Went Wrong!!");
+    }
+  }
+  export async function getEquipmentListings(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const posts = await PostsDao.getAllEquipmentListings();
+
+      posts
+        ? res.sendSuccess(posts, "Equipment Listings Found!")
+        : res.sendError("No posts found");
+    } catch (err) {
+      return res.sendError("Something Went Wrong!!");
+    }
+  }
+  export async function getOtherListings(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const posts = await PostsDao.getAllOtherListings();
+      posts
+        ? res.sendSuccess(posts, "Other Listings Found!")
+        : res.sendError("No posts found");
+    } catch (err) {
+      return res.sendError("Something Went Wrong!!");
+    }
+  }
   export async function getPostsByPostId(
     req: Request,
     res: Response,
     next: NextFunction
-    ) {
-      const postId = req.params.postId;
-      
+  ) {
+    const postId = req.params.postId;
 
-      try {
-        const post = await PostsDao.getPostById(postId);
+    try {
+      const post = await PostsDao.getPostById(postId);
 
-        console.log("post",post);
-     post ? res.sendSuccess(post, "Post Found!"): res.sendError("No post found");
-      
+      // console.log("post", post);
+      post
+        ? res.sendSuccess(post, "Post Found!")
+        : res.sendError("No post found");
     } catch (err) {
       return res.sendError("Something Went Wrong!!");
     }
@@ -173,16 +320,16 @@ export async function updatePost(
     req: Request,
     res: Response,
     next: NextFunction
-    ) {
-      const userId = req.params.userId;
-      
+  ) {
+    const userId = req.params.userId;
 
-      try {
-        const post = await PostsDao.getPostsByUserId(userId);
+    try {
+      const post = await PostsDao.getPostsByUserId(userId);
 
-        console.log("posts by user id",post);
-     post ? res.sendSuccess(post, "Posts Found!"): res.sendError("No posts found");
-      
+      // console.log("posts by user id", post);
+      post
+        ? res.sendSuccess(post, "Posts Found!")
+        : res.sendError("No posts found");
     } catch (err) {
       return res.sendError("Something Went Wrong!!");
     }
@@ -199,23 +346,23 @@ export async function updatePost(
 
       const objectId = new ObjectId(userId);
 
-      console.log('postId', postId);
-      console.log('userId', userId);
-      console.log('objectId', objectId);
+      // console.log("postId", postId);
+      // console.log("userId", userId);
+      // console.log("objectId", objectId);
       const updatedPost = await PostsDao.saveLike(postId, objectId);
 
       if (!updatedPost) {
-        return res.sendError('Failed to save like');
+        return res.sendError("Failed to save like");
       }
 
-      return res.sendSuccess(updatedPost, 'Like Saved Successfully!');
+      return res.sendSuccess(updatedPost, "Like Saved Successfully!");
     } catch (err) {
-      console.log('in catch', err);
+      console.log("in catch", err);
       return res.sendError(err);
     }
   }
 
-   export async function saveComment(
+  export async function saveComment(
     req: Request,
     res: Response,
     next: NextFunction
@@ -235,16 +382,15 @@ export async function updatePost(
       const updatedPost = await PostsDao.saveComment(postId, commentData);
 
       if (!updatedPost) {
-        return res.sendError('Failed to save comment');
+        return res.sendError("Failed to save comment");
       }
 
-      return res.sendSuccess(updatedPost, 'Comment Saved Successfully!');
+      return res.sendSuccess(updatedPost, "Comment Saved Successfully!");
     } catch (err) {
-      console.log('in catch', err);
+      console.log("in catch", err);
       return res.sendError(err);
     }
   }
-
 
   export async function deletePost(
     req: Request,
@@ -290,19 +436,21 @@ export async function updatePost(
       const commentId = req.params.commentId;
       const userId = req.params.userId;
 
-      console.log("postId delete comment", postId);
-      console.log("commentId delete comment", commentId);
-      console.log("userId delete comment", userId);
+      // console.log("postId delete comment", postId);
+      // console.log("commentId delete comment", commentId);
+      // console.log("userId delete comment", userId);
 
       const comment = await PostsDao.getCommentById(postId, commentId);
-      console.log("delete comment - comment", comment);
+      // console.log("delete comment - comment", comment);
 
       if (!comment) {
         return res.sendError("Comment not found");
       }
 
       if (comment.userId.toString() !== userId) {
-        return res.sendError("You do not have permission to delete this comment");
+        return res.sendError(
+          "You do not have permission to delete this comment"
+        );
       }
 
       const updatedPost = await PostsDao.deleteComment(postId, commentId);
@@ -317,9 +465,4 @@ export async function updatePost(
       return res.sendError(err);
     }
   }
-
- 
-
- 
- 
 }

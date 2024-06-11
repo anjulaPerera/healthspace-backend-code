@@ -1,8 +1,7 @@
 import * as mongoose from "mongoose";
 
 interface Common {
-  content: string;
-  title: string;
+
   donationType: string;
   organDonationSpecifics?: {
     organName: string;

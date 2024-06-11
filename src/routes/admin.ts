@@ -23,9 +23,15 @@ export function initAdminRoutes(app: Express) {
   );
 
   app.get(
-    "/api/auth/get/user-list/:limit/:offset",
+    "/api/auth/get/user-list",
     Authentication.superAdminUserVerification,
-    Util.limitOffsetValidationRules(),
     AdminEp.getAllUserList
   );
+
+  app.post(
+    "/api/auth/delete/user/:userId",
+    Authentication.superAdminUserVerification,
+    AdminEp.deleteUser
+  );
+
 }
