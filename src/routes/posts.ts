@@ -76,4 +76,6 @@ export function initPostsRoutes(app: Express) {
   app.get("/api/auth/listings/organs/get", PostsEp.getOrganListings);
   app.get("/api/auth/listings/equipment/get", PostsEp.getEquipmentListings);
   app.get("/api/auth/listings/other/get", PostsEp.getOtherListings);
+
+  app.post("/api/auth/admin/post/delete/:postId", PostsEp.deletePostByAdmin);
 }

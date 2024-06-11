@@ -424,6 +424,33 @@ export namespace PostsEp {
     }
   }
 
+  export async function deletePostByAdmin(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const postId = req.params.postId;
+
+      const post = await PostsDao.getPostById(postId);
+
+      if (!post) {
+        return res.sendError("Post not found");
+      }
+
+      const deletedPost = await post.remove();
+
+      if (!deletedPost) {
+        return res.sendError("Failed to delete post");
+      }
+
+      return res.sendSuccess({}, "Post Deleted Successfully!");
+    } catch (err) {
+      console.log("in catch", err);
+      return res.sendError(err);
+    }
+  }
+
   export async function deleteComment(
     req: Request,
     res: Response,
