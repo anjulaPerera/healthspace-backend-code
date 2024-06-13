@@ -5,36 +5,19 @@ import DonationData from "../enums/Donation";
 const { DonationType, BloodType, UrgencyOfNeed, Condition } = DonationData;
 
 const donationRequestSchema = new mongoose.Schema({
-  donationType: {
-    type: String,
-    enum: DonationType,
+  requestedListing: {
+    type: Object,
     required: true,
   },
-  organDonationSpecifics: {
-    organName: { type: String, required: false },
-    bloodType: { type: String, enum: BloodType, required: false },
-    urgencyOfNeed: { type: String, enum: UrgencyOfNeed, required: false },
-    healthCareProviderDetails: { type: String, required: false },
-  },
-  equipmentDonationSpecifics: {
-    typeOfEquipment: { type: String, required: false },
-    condition: { type: String, enum: Condition, required: false },
-  },
-  otherDonationSpecifics: {
-    typeOfDonation: { type: String, required: false },
-    quantity: { type: Number, required: false },
-    urgencyOfNeed: { type: String, enum: UrgencyOfNeed, required: false },
-  },
-  userId: {
-    type: mongoose.Types.ObjectId,
-    ref: "User",
+  requester: {
+    type: Object,
     required: true,
   },
-  otherDetails: { type: String, required: false },
-  requestedAt: {
-    type: Date,
-    default: Date.now,
-  },
+  donor:{
+    type: Object,
+    required: true,
+  
+  }
 });
 
 const DonationRequest = mongoose.model(

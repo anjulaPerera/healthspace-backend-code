@@ -76,23 +76,8 @@ export namespace PostsEp {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    // const {
-    //   donationType,
-    //   organDonationSpecifics,
-    //   equipmentDonationSpecifics,
-    //   otherDonationSpecifics,
-    //   userId,
-    // } = req.body;
-
     console.log("req.body of listing request::::::::", req.body);
     try {
-      // const newListing = new Listing({
-      //   donationType,
-      //   organDonationSpecifics,
-      //   equipmentDonationSpecifics,
-      //   otherDonationSpecifics,
-      //   userId,
-      // });
       const reqBody = req.body;
       const newListing = new Listing({
         donationType: reqBody.donationType,
@@ -135,21 +120,13 @@ export namespace PostsEp {
       return res.status(400).json({ errors: errors.array() });
     }
 
-    const {
-      donationType,
-      organDonationSpecifics,
-      equipmentDonationSpecifics,
-      otherDonationSpecifics,
-      userId,
-    } = req.body;
+    const { requestedListing, requester, donor } = req.body;
 
     try {
       const newRequest = new DonationRequest({
-        donationType,
-        organDonationSpecifics,
-        equipmentDonationSpecifics,
-        otherDonationSpecifics,
-        userId,
+        requestedListing,
+        requester,
+        donor,
       });
 
       await newRequest.save();
@@ -294,6 +271,24 @@ export namespace PostsEp {
       posts
         ? res.sendSuccess(posts, "Other Listings Found!")
         : res.sendError("No posts found");
+    } catch (err) {
+      return res.sendError("Something Went Wrong!!");
+    }
+  }
+  export async function getListingByListingId(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    const listingId = req.params.listingId;
+
+    try {
+      const post = await PostsDao.getPostById(listingId);
+
+      // console.log("post", post);
+      post
+        ? res.sendSuccess(post, "Listing Found!")
+        : res.sendError("No Listing found");
     } catch (err) {
       return res.sendError("Something Went Wrong!!");
     }
@@ -490,6 +485,61 @@ export namespace PostsEp {
     } catch (err) {
       console.log("in catch", err);
       return res.sendError(err);
+    }
+  }
+
+  export async function getMyOrganListings(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.params.userId;
+      const posts = await PostsDao.getOrganListingByUserId(userId);
+
+      posts
+        ? res.sendSuccess(posts, "Organ Listings Found!")
+        : res.sendError("No posts found");
+
+      console.log(
+        "ORGAN POSTS::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::",
+        posts
+      );
+    } catch (err) {
+      return res.sendError("Something Went Wrong!!");
+    }
+  }
+
+  export async function getMyEquipmentListings(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.params.userId;
+      const posts = await PostsDao.getEquipmentListingByUserId(userId);
+
+      posts
+        ? res.sendSuccess(posts, "Equipment Listings Found!")
+        : res.sendError("No posts found");
+    } catch (err) {
+      return res.sendError("Something Went Wrong!!");
+    }
+  }
+
+  export async function getMyOtherListings(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const userId = req.params.userId;
+      const posts = await PostsDao.getOtherListingByUserId(userId);
+      posts
+        ? res.sendSuccess(posts, "Other Listings Found!")
+        : res.sendError("No posts found");
+    } catch (err) {
+      return res.sendError("Something Went Wrong!!");
     }
   }
 }

@@ -91,6 +91,46 @@ export namespace PostsDao {
     }
   }
 
+  export async function getOrganListingByUserId(
+    userId: string
+  ): Promise<IListing[]> {
+    try {
+      const organListings = await Listings.find({
+        userId,
+        donationType: "ORGAN",
+      }).exec();
+      return organListings;
+    } catch (error) {
+      throw error;
+    }
+  }
+  export async function getEquipmentListingByUserId(
+    userId: string
+  ): Promise<IListing[]> {
+    try {
+      const organListings = await Listings.find({
+        userId,
+        donationType: "EQUIPMENT",
+      }).exec();
+      return organListings;
+    } catch (error) {
+      throw error;
+    }
+  }
+  export async function getOtherListingByUserId(
+    userId: string
+  ): Promise<IListing[]> {
+    try {
+      const organListings = await Listings.find({
+        userId,
+        donationType: "OTHER",
+      }).exec();
+      return organListings;
+    } catch (error) {
+      throw error;
+    }
+  }
+
   // export async function saveLike(
   //   postId: string,
   //   userId: string
@@ -189,6 +229,15 @@ export namespace PostsDao {
   export async function getPostById(postId: string): Promise<IPosts | null> {
     try {
       const post = await Posts.findOne({ _id: new ObjectId(postId) });
+      return post;
+    } catch (error) {
+      console.error("Error getting post by ID:", error);
+      return null;
+    }
+  }
+  export async function getListingByListingId(postId: string): Promise<IPosts | null> {
+    try {
+      const post = await Listings.findOne({ _id: new ObjectId(postId) });
       return post;
     } catch (error) {
       console.error("Error getting post by ID:", error);
