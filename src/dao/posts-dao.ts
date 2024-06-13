@@ -3,6 +3,8 @@ import Posts from "../schemas/posts-schema";
 import Listings from "../schemas/listing-schema";
 import { ObjectId } from "mongodb";
 import { IListing } from "../models/donation-listing-model";
+import DonationRequest from "../schemas/request-schema";
+import { IDonationRequest } from "../models/donation-request-model";
 
 export namespace PostsDao {
   export async function savePost(postData: DPosts): Promise<IPosts | null> {
@@ -54,6 +56,14 @@ export namespace PostsDao {
   export async function getAllListings(): Promise<IListing[]> {
     try {
       const allListings = await Listings.find().exec();
+      return allListings;
+    } catch (error) {
+      throw error;
+    }
+  }
+  export async function getAllRequests(): Promise<IDonationRequest[]> {
+    try {
+      const allListings = await DonationRequest.find().exec();
       return allListings;
     } catch (error) {
       throw error;
@@ -232,6 +242,15 @@ export namespace PostsDao {
       return post;
     } catch (error) {
       console.error("Error getting post by ID:", error);
+      return null;
+    }
+  }
+  export async function getRequestById(requestId: string): Promise<IDonationRequest | null> {
+    try {
+      const post = await DonationRequest.findOne({ _id: new ObjectId(requestId) });
+      return post;
+    } catch (error) {
+      console.error("Error getting request by ID:", error);
       return null;
     }
   }

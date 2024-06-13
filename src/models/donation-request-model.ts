@@ -3,8 +3,9 @@ import * as mongoose from "mongoose";
 interface Common {
   requestedListing: {},
   requester: {},
-  donor: {}
+  donor: {},
+  requestedAt: Date,
 }
 
-export interface DRequest extends Common {}
-export interface IRequest extends Common, mongoose.Document {}
+export interface DDonationRequest extends Common {}
+export interface IDonationRequest extends Common, mongoose.Document {}

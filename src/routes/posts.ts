@@ -72,6 +72,7 @@ export function initPostsRoutes(app: Express) {
     PostsEp.createRequest
   );
   app.get("/api/auth/listings/get", PostsEp.getAllListings);
+  app.get("/api/auth/requests/get", PostsEp.getAllRequests);
   app.get("/api/auth/listings/organs/get", PostsEp.getOrganListings);
   app.get("/api/auth/listings/equipment/get", PostsEp.getEquipmentListings);
   app.get("/api/auth/listings/other/get", PostsEp.getOtherListings);
@@ -84,4 +85,5 @@ export function initPostsRoutes(app: Express) {
    );
 
   app.post("/api/auth/admin/post/delete/:postId", PostsEp.deletePostByAdmin);
+  app.post("/api/auth/admin/request/delete/:postId", PostsEp.deleteRequestByAdmin);
 }

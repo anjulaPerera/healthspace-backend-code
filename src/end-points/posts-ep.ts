@@ -226,6 +226,21 @@ export namespace PostsEp {
       return res.sendError("Something Went Wrong!!");
     }
   }
+  export async function getAllRequests(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const posts = await PostsDao.getAllRequests();
+
+      posts
+        ? res.sendSuccess(posts, "User posts Found!")
+        : res.sendError("No posts found");
+    } catch (err) {
+      return res.sendError("Something Went Wrong!!");
+    }
+  }
   export async function getOrganListings(
     req: Request,
     res: Response,
@@ -431,6 +446,32 @@ export namespace PostsEp {
 
       if (!post) {
         return res.sendError("Post not found");
+      }
+
+      const deletedPost = await post.remove();
+
+      if (!deletedPost) {
+        return res.sendError("Failed to delete post");
+      }
+
+      return res.sendSuccess({}, "Post Deleted Successfully!");
+    } catch (err) {
+      console.log("in catch", err);
+      return res.sendError(err);
+    }
+  }
+  export async function deleteRequestByAdmin(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    try {
+      const requestId = req.params.requestId;
+
+      const post = await PostsDao.getRequestById(requestId);
+
+      if (!post) {
+        return res.sendError("Request not found");
       }
 
       const deletedPost = await post.remove();
