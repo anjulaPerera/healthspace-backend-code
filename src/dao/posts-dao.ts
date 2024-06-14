@@ -245,16 +245,22 @@ export namespace PostsDao {
       return null;
     }
   }
-  export async function getRequestById(requestId: string): Promise<IDonationRequest | null> {
+  export async function getRequestById(
+    requestId: string
+  ): Promise<IDonationRequest | null> {
     try {
-      const post = await DonationRequest.findOne({ _id: new ObjectId(requestId) });
+      const post = await DonationRequest.findOne({
+        _id: new ObjectId(requestId),
+      });
       return post;
     } catch (error) {
       console.error("Error getting request by ID:", error);
       return null;
     }
   }
-  export async function getListingByListingId(postId: string): Promise<IPosts | null> {
+  export async function getListingByListingId(
+    postId: string
+  ): Promise<IPosts | null> {
     try {
       const post = await Listings.findOne({ _id: new ObjectId(postId) });
       return post;

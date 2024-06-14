@@ -460,6 +460,34 @@ export namespace PostsEp {
       return res.sendError(err);
     }
   }
+  export async function deleteUserByAdmin(
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) {
+    console.log("in delete user by admin");
+    try {
+      const userId = req.params.userId;
+
+      const user = await UserDao.getUserById(userId);
+      console.log("user going to be deleted", user);
+
+      if (!user) {
+        return res.sendError("user not found");
+      }
+
+      const deleteduser = await user.remove();
+
+      if (!deleteduser) {
+        return res.sendError("Failed to delete user");
+      }
+
+      return res.sendSuccess({}, "User Deleted Successfully!");
+    } catch (err) {
+      console.log("in catch", err);
+      return res.sendError(err);
+    }
+  }
   export async function deleteRequestByAdmin(
     req: Request,
     res: Response,
@@ -468,19 +496,19 @@ export namespace PostsEp {
     try {
       const requestId = req.params.requestId;
 
-      const post = await PostsDao.getRequestById(requestId);
+      const request = await PostsDao.getRequestById(requestId);
 
-      if (!post) {
+      if (!request) {
         return res.sendError("Request not found");
       }
 
-      const deletedPost = await post.remove();
+      const deletedPost = await request.remove();
 
       if (!deletedPost) {
-        return res.sendError("Failed to delete post");
+        return res.sendError("Failed to delete request");
       }
 
-      return res.sendSuccess({}, "Post Deleted Successfully!");
+      return res.sendSuccess({}, "Request Deleted Successfully!");
     } catch (err) {
       console.log("in catch", err);
       return res.sendError(err);

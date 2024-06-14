@@ -67,23 +67,30 @@ export function initPostsRoutes(app: Express) {
   //===========================================================================
 
   app.post("/api/auth/listing/create", PostsEp.createListing);
-  app.post(
-    "/api/auth/request/create",
-    PostsEp.createRequest
-  );
+  app.post("/api/auth/request/create", PostsEp.createRequest);
   app.get("/api/auth/listings/get", PostsEp.getAllListings);
   app.get("/api/auth/requests/get", PostsEp.getAllRequests);
   app.get("/api/auth/listings/organs/get", PostsEp.getOrganListings);
   app.get("/api/auth/listings/equipment/get", PostsEp.getEquipmentListings);
   app.get("/api/auth/listings/other/get", PostsEp.getOtherListings);
-  app.get("/api/auth/my/listings/organs/get/:userId", PostsEp.getMyOrganListings);
-  app.get("/api/auth/my/listings/equipment/get/:userId", PostsEp.getMyEquipmentListings);
-  app.get("/api/auth/my/listings/other/get/:userId", PostsEp.getMyOtherListings);
-   app.get(
-     "/api/auth/listing/get/:listingId",
-     PostsEp.getListingByListingId
-   );
+  app.get(
+    "/api/auth/my/listings/organs/get/:userId",
+    PostsEp.getMyOrganListings
+  );
+  app.get(
+    "/api/auth/my/listings/equipment/get/:userId",
+    PostsEp.getMyEquipmentListings
+  );
+  app.get(
+    "/api/auth/my/listings/other/get/:userId",
+    PostsEp.getMyOtherListings
+  );
+  app.get("/api/auth/listing/get/:listingId", PostsEp.getListingByListingId);
 
   app.post("/api/auth/admin/post/delete/:postId", PostsEp.deletePostByAdmin);
-  app.post("/api/auth/admin/request/delete/:postId", PostsEp.deleteRequestByAdmin);
+  app.post("/api/auth/admin/user/delete/:userId", PostsEp.deleteUserByAdmin);
+  app.post(
+    "/api/auth/admin/request/delete/:requestId",
+    PostsEp.deleteRequestByAdmin
+  );
 }
